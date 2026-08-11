@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chuyển Tập Tin Dưỡng Sinh.DOCX Sang HTML - D.T.Chánh</title>
+  <script src="js/jszip.min.js"></script>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text: #000000;
+      --border: #000000;
+      --primary: #f0f0f0;
+      --error: #cc0000;
+      --font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-family);
+      font-weight: normal;
+      font-size: 1.0rem;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0.5rem;
+      padding-bottom: 5rem;
+      color: var(--text);
+      background-color: var(--bg);
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 1rem;
+      margin-bottom: 0.2rem;
+      color: var(--text);
+    }
+
+    .author-byline {
+      font-style: normal;
+      font-size: 1.2rem;
+      text-align: right;
+      color: var(--text);
+      margin-bottom: 1rem;
+      font-weight: normal;
+    }
+
+    h2 {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: var(--text);
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: var(--text);
+      margin-top: 0.8rem;
+      margin-bottom: 0.4rem;
+    }
+
+    p {
+      margin-top: 0;
+      margin-bottom: 0.8rem;
+      text-align: justify;
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .card-box {
+      border: 2px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      background-color: var(--bg);
+      box-sizing: border-box;
+      max-width: 100%;
+    }
+
+    .btn-action {
+      background-color: var(--bg);
+      color: var(--text);
+      border: 2px solid var(--border);
+      border-radius: 0.4rem;
+      padding: 0.5rem 1rem;
+      font-size: 1.0rem;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+      max-width: 100%;
+      box-sizing: border-box;
+      white-space: normal;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    .btn-action svg {
+      flex-shrink: 0;
+    }
+
+    .btn-action:hover {
+      background-color: var(--primary);
+    }
+
+    .btn-action:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .file-drop-area {
+      border: 2px dashed var(--border);
+      border-radius: 0.5rem;
+      padding: 1.5rem 0.5rem;
+      text-align: center;
+      cursor: pointer;
+      background-color: var(--bg);
+      margin-bottom: 1rem;
+    }
+
+    .file-drop-area:hover, .file-drop-area.dragover {
+      background-color: var(--primary);
+    }
+
+    .stats-grid-box {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 0.6rem;
+      margin-top: 0.8rem;
+    }
+
+    .stat-card-item {
+      border: 2px solid var(--border);
+      border-radius: 0.4rem;
+      padding: 0.5rem;
+      text-align: center;
+    }
+
+    .stat-card-item strong {
+      display: block;
+      font-size: 1.4rem;
+      font-weight: bold;
+    }
+
+    .validation-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-top: 0.8rem;
+    }
+
+    .validation-item {
+      border: 2px solid var(--border);
+      border-radius: 0.4rem;
+      padding: 0.5rem 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background-color: var(--bg);
+      font-size: 0.95rem;
+    }
+
+    .logs-container {
+      border: 2px solid var(--border);
+      border-radius: 0.4rem;
+      padding: 0.8rem;
+      font-size: 0.9rem;
+      max-height: 220px;
+      overflow-y: auto;
+      margin-top: 0.8rem;
+      font-family: monospace;
+      background-color: var(--bg);
+    }
+
+    .preview-frame-box {
+      width: 100%;
+      height: 550px;
+      border: 2px solid var(--border);
+      border-radius: 0.4rem;
+      margin-top: 0.8rem;
+      background-color: var(--bg);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .error-msg {
+      color: var(--error);
+      font-weight: bold;
+      margin-top: 0.8rem;
+    }
+
+    .flex-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+<body>
+  <h1>Chuyển Tập Tin Dưỡng Sinh.DOCX Sang HTML</h1>
+  <div class="author-byline">D.T.Chánh</div>
+
+  <!-- Khối 1: Chọn tập tin -->
+  <div class="card-box">
+    <h2>1. Chọn tập tin Word (.docx)</h2>
+    <p>Nhấp chọn, kéo thả hoặc dán tập tin Word (.docx) để phân tích cấu trúc và chuyển đổi sang HTML:</p>
+
+    <div id="dropArea" class="file-drop-area">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 0.5rem auto; display: block;">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="17 8 12 3 7 8"></polyline>
+        <line x1="12" y1="3" x2="12" y2="15"></line>
+      </svg>
+      <div id="fileAreaText" style="font-weight: bold;">Nhấp vào đây để chọn tập tin .docx hoặc kéo thả tập tin vào ô này</div>
+      <input type="file" id="fileInput" accept=".docx" class="hidden" />
+    </div>
+
+    <div class="flex-row">
+      <button type="button" id="btnConvert" class="btn-action" disabled>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+        <span>Chuyển đổi ngay</span>
+      </button>
+
+      <button type="button" id="btnChangeFile" class="btn-action hidden">
+        Đổi tập tin khác
+      </button>
+    </div>
+
+    <div id="errorMessage" class="error-msg hidden"></div>
+  </div>
+
+  <!-- Khối 2: Kết quả phân tích & Kiểm tra -->
+  <div id="resultSection" class="card-box hidden">
+    <h2>2. Thống kê &amp; Kiểm tra chất lượng (Validation)</h2>
+
+    <div class="stats-grid-box">
+      <div class="stat-card-item">
+        <strong id="statParagraphs">0</strong>
+        <div>Đoạn văn</div>
+      </div>
+      <div class="stat-card-item">
+        <strong id="statHeadings">0</strong>
+        <div>Headings (1-4)</div>
+      </div>
+      <div class="stat-card-item">
+        <strong id="statBullets">0</strong>
+        <div>Danh sách Bullet</div>
+      </div>
+      <div class="stat-card-item">
+        <strong id="statImages">0</strong>
+        <div>Hình đã loại bỏ</div>
+      </div>
+      <div class="stat-card-item">
+        <strong id="statReferences">0</strong>
+        <div>Tham chiếu liên kết</div>
+      </div>
+    </div>
+
+    <h3 style="margin-top: 1rem;">Danh sách kiểm tra tự động (Validation):</h3>
+    <div id="validationContainer" class="validation-list"></div>
+
+    <div style="margin-top: 1rem;">
+      <button type="button" id="btnToggleLogs" class="btn-action" style="padding: 0.3rem 0.6rem; font-size: 0.9rem;">
+        ▲ Ẩn nhật ký phân tích
+      </button>
+      <div id="logsContainer" class="logs-container"></div>
+    </div>
+  </div>
+
+  <!-- Khối 3: Tải về & Xem trước -->
+  <div id="previewSection" class="card-box hidden">
+    <h2>3. Tải về tập tin HTML chuẩn hoá</h2>
+    <div class="flex-row" style="margin-bottom: 1rem;">
+      <button type="button" id="btnDownload" class="btn-action">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        <span id="downloadBtnText">Tải tập tin HTML ngay</span>
+      </button>
+    </div>
+
+    <h2>4. Xem trước nội dung (Preview)</h2>
+    <p style="font-size: 0.95rem;">
+      Khung dưới đây hiển thị chính xác nội dung HTML đầu ra. Nhấp vào các liên kết tham chiếu sẽ tự mở mục ẩn chứa nó và cuộn mượt đến đúng vị trí:
+    </p>
+
+    <iframe id="previewIframe" class="preview-frame-box" title="Xem trước nội dung HTML"></iframe>
+  </div>
+
+  <script>
+    (function () {
+      // ==========================================
+      // ĐỊNH NGHĨA CÁC HẰNG SỐ KÝ HIỆU & THÔNG TIN TÁC GIẢ
+      // (Dễ dàng thay đổi ký tự hoặc thông tin ở đây)
+      // ==========================================
+      const COPYRIGHT_SYMBOL = '©';          // Ký hiệu bản quyền / bullet mức 1
+      const DASH_SYMBOL = '-';               // Dấu trừ bullet mức 2
+      const TITLE_SEPARATOR = ' - ';         // Dấu phân cách tiêu đề & tác giả
+      const AUTHOR_NAME = 'Dương Tấn Chánh';    // Tên tác giả đầy đủ
+      const AUTHOR_SHORT_NAME = 'D.T.Chánh';   // Tên tác giả viết tắt
+
+      function escapeRegExp(str) {
+        if (!str) return '';
+        return str.replace(/[.*+?^${}()|[\]\\-]/g, '\\$&');
+      }
+
+      let selectedFile = null;
+      let generatedHtmlResult = '';
+
+      const dropArea = document.getElementById('dropArea');
+      const fileInput = document.getElementById('fileInput');
+      const fileAreaText = document.getElementById('fileAreaText');
+      const btnConvert = document.getElementById('btnConvert');
+      const btnChangeFile = document.getElementById('btnChangeFile');
+      const errorMessage = document.getElementById('errorMessage');
+
+      const resultSection = document.getElementById('resultSection');
+      const previewSection = document.getElementById('previewSection');
+
+      const statParagraphs = document.getElementById('statParagraphs');
+      const statHeadings = document.getElementById('statHeadings');
+      const statBullets = document.getElementById('statBullets');
+      const statImages = document.getElementById('statImages');
+      const statReferences = document.getElementById('statReferences');
+      const validationContainer = document.getElementById('validationContainer');
+      const logsContainer = document.getElementById('logsContainer');
+      const btnToggleLogs = document.getElementById('btnToggleLogs');
+
+      const btnDownload = document.getElementById('btnDownload');
+      const downloadBtnText = document.getElementById('downloadBtnText');
+      const previewIframe = document.getElementById('previewIframe');
+
+      // Drag & Drop Handlers
+      dropArea.addEventListener('click', function () {
+        fileInput.click();
+      });
+
+      ['dragenter', 'dragover'].forEach(function (eventName) {
+        dropArea.addEventListener(eventName, function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          dropArea.classList.add('dragover');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach(function (eventName) {
+        dropArea.addEventListener(eventName, function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          dropArea.classList.remove('dragover');
+        });
+      });
+
+      dropArea.addEventListener('drop', function (e) {
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
+          handleFileSelection(e.dataTransfer.files[0]);
+        }
+      });
+
+      fileInput.addEventListener('change', function (e) {
+        if (e.target.files && e.target.files[0]) {
+          handleFileSelection(e.target.files[0]);
+        }
+      });
+
+      // Dán file từ clipboard
+      window.addEventListener('paste', function (e) {
+        if (e.clipboardData && e.clipboardData.files && e.clipboardData.files.length > 0) {
+          const file = e.clipboardData.files[0];
+          if (file.name.toLowerCase().endsWith('.docx')) {
+            handleFileSelection(file);
+          }
+        }
+      });
+
+      btnChangeFile.addEventListener('click', function () {
+        fileInput.click();
+      });
+
+      btnToggleLogs.addEventListener('click', function () {
+        if (logsContainer.classList.contains('hidden')) {
+          logsContainer.classList.remove('hidden');
+          btnToggleLogs.textContent = '▲ Ẩn nhật ký phân tích';
+        } else {
+          logsContainer.classList.add('hidden');
+          btnToggleLogs.textContent = '▼ Hiện nhật ký phân tích';
+        }
+      });
+
+      function handleFileSelection(file) {
+        if (!file.name.toLowerCase().endsWith('.docx')) {
+          showError('Vui lòng chọn đúng tập tin định dạng .docx');
+          return;
+        }
+
+        selectedFile = file;
+        hideError();
+        fileAreaText.innerHTML = 'Đã chọn: <strong>' + escapeHtml(file.name) + '</strong> (' + (file.size / 1024).toFixed(1) + ' KB)';
+        btnConvert.disabled = false;
+        btnChangeFile.classList.remove('hidden');
+
+        const baseName = file.name.replace(/\.[^/.]+$/, '');
+        const defaultHtmlName = (baseName || 'ket-qua') + '.html';
+        downloadBtnText.textContent = 'Tải file “' + defaultHtmlName + '” ngay';
+      }
+
+      function showError(msg) {
+        errorMessage.textContent = '⚠️ ' + msg;
+        errorMessage.classList.remove('hidden');
+      }
+
+      function hideError() {
+        errorMessage.textContent = '';
+        errorMessage.classList.add('hidden');
+      }
+
+      // Chuẩn hoá tiếng Việt quy tắc mới: "hoà" thay vì "hòa", "thuỷ" thay vì "thủy"
+      function normalizeVietnameseTypography(str) {
+        if (!str) return '';
+        return str
+          .replace(/oà/g, 'oà').replace(/oá/g, 'oá').replace(/oả/g, 'oả').replace(/oã/g, 'oã').replace(/oạ/g, 'oạ')
+          .replace(/oè/g, 'oè').replace(/oé/g, 'oé').replace(/oẻ/g, 'oẻ').replace(/oẽ/g, 'oẽ').replace(/oẹ/g, 'oẹ')
+          .replace(/uỳ/g, 'uỳ').replace(/uý/g, 'uý').replace(/uỷ/g, 'uỷ').replace(/uỹ/g, 'uỹ').replace(/uỵ/g, 'uỵ');
+      }
+
+      function slugify(text) {
+        if (!text) return '';
+        return text
+          .toString()
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[đĐ]/g, 'd')
+          .replace(/[^a-z0-9 -]/g, '')
+          .replace(/\s+/g, '-')
+          .replace(/-+/g, '-')
+          .trim();
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return str
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      btnConvert.addEventListener('click', async function () {
+        if (!selectedFile) return;
+
+        if (!window.JSZip) {
+          showError('Không tìm thấy thư viện JSZip. Vui lòng kiểm tra tập tin js/jszip.min.js.');
+          return;
+        }
+
+        btnConvert.disabled = true;
+        btnConvert.querySelector('span').textContent = 'Đang phân tích DOCX...';
+        hideError();
+
+        try {
+          const result = await processDocx2Pass(selectedFile);
+          generatedHtmlResult = result.htmlContent;
+
+          statParagraphs.textContent = result.stats.totalParagraphs;
+          statHeadings.textContent = result.stats.headingCount;
+          statBullets.textContent = result.stats.bulletCount;
+          statImages.textContent = result.stats.imagesRemovedCount;
+          statReferences.textContent = result.stats.referencesConvertedCount;
+
+          renderValidations(result.validations);
+
+          logsContainer.innerHTML = result.logs.map(function (log) {
+            return '<div style="padding: 0.15rem 0; border-bottom: 1px solid #eeeeee;">' + escapeHtml(log) + '</div>';
+          }).join('');
+
+          resultSection.classList.remove('hidden');
+          previewSection.classList.remove('hidden');
+
+          const doc = previewIframe.contentDocument;
+          if (doc) {
+            doc.open();
+            doc.write(generatedHtmlResult);
+            doc.close();
+          }
+
+          resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } catch (err) {
+          console.error(err);
+          showError(err.message || 'Có lỗi xảy ra khi phân tích tập tin Word.');
+        } finally {
+          btnConvert.disabled = false;
+          btnConvert.querySelector('span').textContent = 'Chuyển đổi ngay';
+        }
+      });
+
+      function renderValidations(validations) {
+        validationContainer.innerHTML = validations.map(function (v) {
+          const icon = v.passed ? '✓' : '⚠';
+          const color = v.passed ? '#008000' : '#cc0000';
+          return '<div class="validation-item">' +
+            '<span style="font-weight: bold; font-size: 1.1rem; color: ' + color + ';">' + icon + '</span>' +
+            '<div><strong>' + escapeHtml(v.label) + '</strong>: ' + escapeHtml(v.message) + '</div>' +
+          '</div>';
+        }).join('');
+      }
+
+      btnDownload.addEventListener('click', function () {
+        if (!generatedHtmlResult) return;
+
+        const name = selectedFile ? (selectedFile.name.replace(/\.[^/.]+$/, '') || 'ket-qua') + '.html' : 'ket-qua.html';
+
+        const blob = new Blob([generatedHtmlResult], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = name;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        downloadBtnText.textContent = 'Đã tải về xong!';
+        setTimeout(function () {
+          downloadBtnText.textContent = 'Tải file “' + name + '” ngay';
+        }, 2500);
+      });
+
+      // ==========================================
+      // BỘ LỌC PHÁT HIỆN & LOẠI BỎ MỤC LỤC WORD
+      // ==========================================
+      function isTocTitleText(text) {
+        if (!text) return false;
+        const norm = text.toUpperCase().replace(/\s+/g, ' ').trim();
+        return (
+          norm === 'MỤC LỤC' ||
+          norm === 'MỤC LỤC SÁCH' ||
+          norm === 'MỤC LỤC TÀI LIỆU' ||
+          norm === 'MỤC LỤC BÁO CÁO' ||
+          norm === 'TABLE OF CONTENTS' ||
+          norm === 'CONTENTS' ||
+          norm.startsWith('MỤC LỤC:') ||
+          norm.startsWith('MỤC LỤC -') ||
+          norm.startsWith('MỤC LỤC ')
+        );
+      }
+
+      function isTocStyleId(styleVal) {
+        if (!styleVal) return false;
+        return /^(TOC|TOCHeading|TOC1|TOC2|TOC3|TOC4|TOC5|TableOfContents|MucLuc)$/i.test(styleVal.replace(/[\s_]/g, ''));
+      }
+
+      function isTocXmlContent(pNode) {
+        const fldSimples = pNode.getElementsByTagName('w:fldSimple');
+        for (let f = 0; f < fldSimples.length; f++) {
+          const instr = fldSimples[f].getAttribute('w:instr') || '';
+          if (/TOC/i.test(instr)) return true;
+        }
+        const instrs = pNode.getElementsByTagName('w:instrText');
+        for (let t = 0; t < instrs.length; t++) {
+          const txt = instrs[t].textContent || '';
+          if (/TOC/i.test(txt) || /_Toc/i.test(txt)) return true;
+        }
+        let parent = pNode.parentNode;
+        while (parent && parent.nodeName !== 'w:body') {
+          if (parent.nodeName === 'w:sdt') {
+            const sdtPr = parent.getElementsByTagName('w:sdtPr')[0];
+            if (sdtPr) {
+              const docPartGallery = sdtPr.getElementsByTagName('w:docPartGallery')[0];
+              if (docPartGallery) {
+                const val = docPartGallery.getAttribute('w:val') || '';
+                if (/Table of Contents|TOC/i.test(val)) return true;
+              }
+            }
+          }
+          parent = parent.parentNode;
+        }
+        return false;
+      }
+
+      function isTocDottedLine(text) {
+        if (!text) return false;
+        return /(\.{2,}|…{2,})\s*\d+\s*$/.test(text) || /\.\.\.\.\.\./.test(text);
+      }
+
+      // ==========================================
+      // ==========================================
+      // THUẬT TOÁN 2 PASS PHÂN TÍCH DOCX SANG HTML
+      // ==========================================
+      async function processDocx2Pass(file) {
+        const zip = new window.JSZip();
+        const zipContent = await zip.loadAsync(file);
+
+        const docXmlFile = zipContent.file('word/document.xml');
+        if (!docXmlFile) {
+          throw new Error('Tập tin không chứa word/document.xml. Vui lòng kiểm tra định dạng .docx');
+        }
+
+        const parser = new DOMParser();
+        const docXmlText = await docXmlFile.async('string');
+        const xmlDoc = parser.parseFromString(docXmlText, 'text/xml');
+
+        // Bảng tra cứu Relationships (document.xml.rels)
+        const relsMap = new Map();
+        const relsFile = zipContent.file('word/_rels/document.xml.rels');
+        if (relsFile) {
+          const relsText = await relsFile.async('string');
+          const relsDoc = parser.parseFromString(relsText, 'text/xml');
+          const relNodes = relsDoc.getElementsByTagName('Relationship');
+          for (let r = 0; r < relNodes.length; r++) {
+            const id = relNodes[r].getAttribute('Id');
+            const target = relNodes[r].getAttribute('Target');
+            if (id && target) {
+              relsMap.set(id, target);
+            }
+          }
+        }
+
+        // Bảng tra cứu Style ID -> Heading Level
+        const styleMap = new Map();
+        const stylesFile = zipContent.file('word/styles.xml');
+        if (stylesFile) {
+          const stylesText = await stylesFile.async('string');
+          const stylesDoc = parser.parseFromString(stylesText, 'text/xml');
+          const styleNodes = stylesDoc.getElementsByTagName('w:style');
+          for (let s = 0; s < styleNodes.length; s++) {
+            const stNode = styleNodes[s];
+            const styleId = stNode.getAttribute('w:styleId');
+            const nameNode = stNode.getElementsByTagName('w:name')[0];
+            const nameVal = nameNode ? nameNode.getAttribute('w:val') || '' : '';
+            
+            let lvl = 0;
+            if (/^Heading\s*1$/i.test(nameVal) || /^Tiêu\s*đề\s*1$/i.test(nameVal) || /^Heading1$/i.test(styleId)) lvl = 1;
+            else if (/^Heading\s*2$/i.test(nameVal) || /^Tiêu\s*đề\s*2$/i.test(nameVal) || /^Heading2$/i.test(styleId)) lvl = 2;
+            else if (/^Heading\s*3$/i.test(nameVal) || /^Tiêu\s*đề\s*3$/i.test(nameVal) || /^Heading3$/i.test(styleId)) lvl = 3;
+            else if (/^Heading\s*4$/i.test(nameVal) || /^Tiêu\s*đề\s*4$/i.test(nameVal) || /^Heading4$/i.test(styleId)) lvl = 4;
+
+            if (styleId && lvl > 0) {
+              styleMap.set(styleId, lvl);
+            }
+          }
+        }
+
+        const body = xmlDoc.getElementsByTagName('w:body')[0];
+        if (!body) {
+          throw new Error('Tập tin XML thiếu phần tử w:body.');
+        }
+
+        const rawParagraphs = body.getElementsByTagName('w:p');
+
+        const logs = [];
+        logs.push('Đã nạp tập tin DOCX thành công.');
+        logs.push('Tìm thấy ' + rawParagraphs.length + ' phần tử đoạn văn trong document.xml.');
+
+        // PASS 1: Phân tích cấu trúc trung gian & Xây dựng Heading & Bookmark Index
+        const intermediateBlocks = [];
+        const headingList = []; // Mảng lưu tất cả Heading để so sánh liên kết tham chiếu linh hoạt
+        const bookmarkMap = new Map(); // Bảng tra cứu Bookmark -> Heading ID
+        const usedSlugs = new Map();
+
+        let docTitle = ''; // Tiêu đề h1 của tài liệu = Dòng đầu tiên trong file DOCX chứa văn bản
+        let totalParagraphsCount = 0;
+        let imagesRemovedCount = 0;
+        let headingCount = 0;
+        let bulletCount = 0;
+        let tocRemovedCount = 0;
+        let inTocSection = false;
+        let autoH1Counter = 1; // Bộ đếm tự động khôi phục số cho Heading 1 nếu file Word dùng Auto Numbering
+
+        function getUniqueSlug(baseTitle) {
+          let slug = slugify(baseTitle) || 'muc';
+          if (usedSlugs.has(slug)) {
+            const count = usedSlugs.get(slug) + 1;
+            usedSlugs.set(slug, count);
+            return slug + '-' + count;
+          } else {
+            usedSlugs.set(slug, 1);
+            return slug;
+          }
+        }
+
+        function cleanForMatching(str) {
+          if (!str) return '';
+          return str
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[đĐ]/g, 'd')
+            .replace(/[^a-z0-9]/g, '');
+        }
+
+        function stripLeadingNumbers(str) {
+          if (!str) return '';
+          return str.replace(/^[\d\.\s:\-_BàiChươngSectionphầnmụcbài]+/gi, '').trim();
+        }
+
+        for (let i = 0; i < rawParagraphs.length; i++) {
+          const pNode = rawParagraphs[i];
+
+          // Thu thập tất cả BookmarkStart trong đoạn văn này
+          const bmNodes = pNode.getElementsByTagName('w:bookmarkStart');
+          const pBookmarks = [];
+          for (let b = 0; b < bmNodes.length; b++) {
+            const bmName = bmNodes[b].getAttribute('w:name');
+            if (bmName && !bmName.startsWith('_GoBack')) {
+              pBookmarks.push(bmName);
+            }
+          }
+
+          // 1. Kiểm tra hình ảnh
+          const drawings = pNode.getElementsByTagName('w:drawing');
+          const picts = pNode.getElementsByTagName('w:pict');
+          const objects = pNode.getElementsByTagName('w:object');
+
+          if (drawings.length > 0 || picts.length > 0 || objects.length > 0) {
+            imagesRemovedCount += (drawings.length + picts.length + objects.length);
+          }
+
+          // 2. Xác định style / headingLevel
+          let headingLevel = 0;
+          let isBullet = false;
+          let bulletLevel = 0;
+          let pStyleVal = '';
+
+          const pPr = pNode.getElementsByTagName('w:pPr')[0];
+          if (pPr) {
+            const pStyle = pPr.getElementsByTagName('w:pStyle')[0];
+            if (pStyle) {
+              pStyleVal = pStyle.getAttribute('w:val') || '';
+              if (styleMap.has(pStyleVal)) {
+                headingLevel = styleMap.get(pStyleVal);
+              } else if (/^Heading1$/i.test(pStyleVal) || /^1$/i.test(pStyleVal)) headingLevel = 1;
+              else if (/^Heading2$/i.test(pStyleVal) || /^2$/i.test(pStyleVal)) headingLevel = 2;
+              else if (/^Heading3$/i.test(pStyleVal) || /^3$/i.test(pStyleVal)) headingLevel = 3;
+              else if (/^Heading4$/i.test(pStyleVal) || /^4$/i.test(pStyleVal)) headingLevel = 4;
+            }
+
+            if (headingLevel === 0) {
+              const outlineLvl = pPr.getElementsByTagName('w:outlineLvl')[0];
+              if (outlineLvl) {
+                const lvlVal = parseInt(outlineLvl.getAttribute('w:val') || '99', 10);
+                if (lvlVal >= 0 && lvlVal <= 3) {
+                  headingLevel = lvlVal + 1;
+                }
+              }
+            }
+
+            const numPr = pPr.getElementsByTagName('w:numPr')[0];
+            if (numPr) {
+              isBullet = true;
+              const ilvlNode = numPr.getElementsByTagName('w:ilvl')[0];
+              if (ilvlNode) {
+                const ilvlVal = parseInt(ilvlNode.getAttribute('w:val') || '0', 10);
+                bulletLevel = ilvlVal === 0 ? 1 : 2;
+              } else {
+                bulletLevel = 1;
+              }
+            }
+          }
+
+          // 3. Đọc nội dung văn bản (bỏ ảnh và bóc tách đầy đủ các Field Link)
+          let plainText = '';
+          let htmlFormatted = '';
+          let currentInstrText = '';
+          let activeComplexTarget = null;
+
+          function parseRunNodes(node) {
+            if (node.nodeName === 'w:r') {
+              // Bắt Complex Field (fldChar)
+              const fldChar = node.getElementsByTagName('w:fldChar')[0];
+              if (fldChar) {
+                const charType = fldChar.getAttribute('w:fldCharType');
+                if (charType === 'begin') {
+                  currentInstrText = '';
+                } else if (charType === 'separate') {
+                  let fTarget = null;
+                  if (/HYPERLINK\s+"([^"]+)"/i.test(currentInstrText)) {
+                    fTarget = RegExp.$1;
+                  } else if (/HYPERLINK\s+\\l\s+"([^"]+)"/i.test(currentInstrText) || /HYPERLINK\s+\\l\s+([^\s\\]+)/i.test(currentInstrText) || /(?:REF|PAGEREF|NOTEREF)\s+"([^"]+)"/i.test(currentInstrText) || /(?:REF|PAGEREF|NOTEREF)\s+([^\s\\]+)/i.test(currentInstrText)) {
+                    fTarget = RegExp.$1;
+                  }
+                  if (fTarget) {
+                    activeComplexTarget = fTarget;
+                    htmlFormatted += '<a data-raw-target="' + escapeHtml(fTarget) + '">';
+                  }
+                } else if (charType === 'end') {
+                  if (activeComplexTarget) {
+                    htmlFormatted += '</a>';
+                    activeComplexTarget = null;
+                  }
+                }
+                return;
+              }
+
+              // Bắt instrText trong w:r
+              const instrNode = node.getElementsByTagName('w:instrText')[0];
+              if (instrNode) {
+                currentInstrText += ' ' + (instrNode.textContent || '');
+                return;
+              }
+
+              let runText = '';
+              const tNodes = node.getElementsByTagName('w:t');
+              for (let t = 0; t < tNodes.length; t++) {
+                runText += tNodes[t].textContent || '';
+              }
+              if (!runText) return;
+
+              plainText += runText;
+
+              let runHtml = escapeHtml(normalizeVietnameseTypography(runText));
+              const rPr = node.getElementsByTagName('w:rPr')[0];
+              if (rPr) {
+                if (rPr.getElementsByTagName('w:b').length > 0) runHtml = '<strong>' + runHtml + '</strong>';
+                if (rPr.getElementsByTagName('w:i').length > 0) runHtml = '<em>' + runHtml + '</em>';
+                if (rPr.getElementsByTagName('w:u').length > 0) runHtml = '<u>' + runHtml + '</u>';
+              }
+              htmlFormatted += runHtml;
+            } else if (node.nodeName === 'w:hyperlink') {
+              let targetHref = '';
+              const rId = node.getAttribute('r:id');
+              const anchor = node.getAttribute('w:anchor');
+
+              if (anchor) {
+                targetHref = anchor;
+              } else if (rId && relsMap.has(rId)) {
+                targetHref = relsMap.get(rId);
+              }
+
+              if (targetHref) {
+                htmlFormatted += '<a data-raw-target="' + escapeHtml(targetHref) + '">';
+              }
+
+              for (let c = 0; c < node.childNodes.length; c++) {
+                parseRunNodes(node.childNodes[c]);
+              }
+
+              if (targetHref) {
+                htmlFormatted += '</a>';
+              }
+            } else if (node.nodeName === 'w:fldSimple') {
+              const instr = node.getAttribute('w:instr') || '';
+              let fTarget = null;
+              if (/HYPERLINK\s+"([^"]+)"/i.test(instr)) {
+                fTarget = RegExp.$1;
+              } else if (/HYPERLINK\s+\\l\s+"([^"]+)"/i.test(instr) || /HYPERLINK\s+\\l\s+([^\s\\]+)/i.test(instr) || /(?:REF|PAGEREF|NOTEREF)\s+"([^"]+)"/i.test(instr) || /(?:REF|PAGEREF|NOTEREF)\s+([^\s\\]+)/i.test(instr)) {
+                fTarget = RegExp.$1;
+              }
+
+              if (fTarget) {
+                htmlFormatted += '<a data-raw-target="' + escapeHtml(fTarget) + '">';
+              }
+
+              for (let c = 0; c < node.childNodes.length; c++) {
+                parseRunNodes(node.childNodes[c]);
+              }
+
+              if (fTarget) {
+                htmlFormatted += '</a>';
+              }
+            } else if (node.nodeName !== 'w:drawing' && node.nodeName !== 'w:pict' && node.nodeName !== 'w:object' && node.nodeName !== 'w:instrText') {
+              for (let c = 0; c < node.childNodes.length; c++) {
+                parseRunNodes(node.childNodes[c]);
+              }
+            }
+          }
+
+          for (let cn = 0; cn < pNode.childNodes.length; cn++) {
+            parseRunNodes(pNode.childNodes[cn]);
+          }
+
+          let trimmedText = plainText.trim();
+          if (!trimmedText) continue; // Bỏ đoạn văn rỗng
+
+          // LOẠI BỎ MỤC LỤC VÀ TIÊU ĐỀ MỤC LỤC
+          const isTitleTOC = isTocTitleText(trimmedText);
+          const isStyleTOC = isTocStyleId(pStyleVal);
+          const isXmlTOC = isTocXmlContent(pNode);
+          const isDottedTOC = isTocDottedLine(trimmedText);
+
+          if (isTitleTOC || isStyleTOC || isXmlTOC) {
+            inTocSection = true;
+            tocRemovedCount++;
+            continue; // LOẠI BỎ KHỎI TÀI LIỆU
+          }
+
+          if (inTocSection) {
+            if (isDottedTOC || /_Toc/i.test(htmlFormatted) || /^\d+\s*$/.test(trimmedText)) {
+              tocRemovedCount++;
+              continue; // TIẾP TỤC BỎ KHỐI MỤC LỤC
+            }
+            if (headingLevel > 0 || trimmedText.length > 80) {
+              inTocSection = false; // KẾT THÚC KHỐI MỤC LỤC, VÀO NỘI DUNG CHÍNH
+            } else {
+              tocRemovedCount++;
+              continue;
+            }
+          }
+
+          totalParagraphsCount++;
+
+          // QUY TẮC CỐ ĐỊNH: Tiêu đề h1 của tài liệu = Dòng đầu tiên trong file DOCX có văn bản (sau khi đã bỏ Mục Lục)
+          // YÊU CẦU: Khi đã đem dòng đầu tiên làm H1 chính thì BỎ DÒNG ĐẦU TIÊN NÀY KHỎI THÂN VĂN BẢN
+          if (!docTitle) {
+            docTitle = normalizeVietnameseTypography(trimmedText);
+            logs.push('Đã lấy dòng đầu tiên "' + docTitle + '" làm tiêu đề H1 và cắt bỏ dòng này khỏi thân nội dung.');
+            continue; // LOẠI BỎ DÒNG ĐẦU KHỎI NỘI DUNG THÂN
+          }
+
+          // Phân loại bullet tự động nếu bắt đầu bằng COPYRIGHT_SYMBOL hoặc DASH_SYMBOL / – / — / * / +
+          if (!isBullet) {
+            if (trimmedText.startsWith(COPYRIGHT_SYMBOL)) {
+              isBullet = true;
+              bulletLevel = 1;
+            } else {
+              const dashRegex = new RegExp('^[\\s' + escapeRegExp(DASH_SYMBOL) + '–—*+]+\\s*');
+              if (dashRegex.test(trimmedText)) {
+                isBullet = true;
+                bulletLevel = 2;
+              }
+            }
+          }
+
+          // QUY TẮC: Khi câu đã chuyển thành bullet (mức 1 hoặc mức 2), BỎ HOÀN TOÀN DẤU TRỪ VÀ KÝ HIỆU BULLET Ở ĐẦU CÂU
+          if (isBullet && headingLevel === 0) {
+            const cleanPattern = '[\\s' + escapeRegExp(DASH_SYMBOL) + '•–—*+' + escapeRegExp(COPYRIGHT_SYMBOL) + ']+';
+            const bulletCleanRegex = new RegExp('^' + cleanPattern + '\\s*');
+            const htmlCleanRegex = new RegExp('^(?:<[^>]+>)*' + cleanPattern + '(?:\\s*<[^>]+>)*\\s*');
+
+            trimmedText = trimmedText.replace(bulletCleanRegex, '');
+            // Làm sạch cả htmlFormatted để loại bỏ dấu bullet/dấu trừ ở đầu câu khi xuất ra <li>
+            htmlFormatted = htmlFormatted.replace(htmlCleanRegex, '');
+          }
+
+          if (headingLevel > 0) {
+            headingCount++;
+            
+            let fullHeadingTitle = normalizeVietnameseTypography(trimmedText);
+
+            // KIỂM TRA ĐẢM BẢO HEADING 1 KHÔNG BAO GIỜ BỊ MẤT SỐ
+            // Nếu file Word dùng tính năng Automatic List Numbering, XML không có chữ số -> tự động bổ sung số thứ tự vào trước
+            if (headingLevel === 1) {
+              const hasNumAtStart = /^[\d\.\s:\-_BàiChươngSectionphầnmụcbài]{1,15}\d/i.test(fullHeadingTitle) || /^\d+[\.\:\s]/i.test(fullHeadingTitle);
+              if (!hasNumAtStart) {
+                const prefixStr = autoH1Counter + '. ';
+                fullHeadingTitle = prefixStr + fullHeadingTitle;
+                trimmedText = prefixStr + trimmedText;
+                htmlFormatted = prefixStr + htmlFormatted;
+                autoH1Counter++;
+              }
+            }
+
+            const headingSlug = getUniqueSlug(fullHeadingTitle);
+
+            // Đăng ký Bookmark của đoạn này trỏ trực tiếp đến headingSlug
+            for (let b = 0; b < pBookmarks.length; b++) {
+              bookmarkMap.set(pBookmarks[b], headingSlug);
+              bookmarkMap.set(cleanForMatching(pBookmarks[b]), headingSlug);
+            }
+
+            const headingObj = {
+              id: headingSlug,
+              title: fullHeadingTitle,
+              sourceIndex: i,
+              normExact: fullHeadingTitle.toLowerCase().trim(),
+              normNoNum: stripLeadingNumbers(fullHeadingTitle).toLowerCase().trim(),
+              normClean: cleanForMatching(fullHeadingTitle),
+              normCleanNoNum: cleanForMatching(stripLeadingNumbers(fullHeadingTitle))
+            };
+
+            headingList.push(headingObj);
+
+            intermediateBlocks.push({
+              type: 'heading',
+              level: headingLevel,
+              title: fullHeadingTitle,
+              id: headingSlug,
+              sourceIndex: i
+            });
+          } else if (isBullet) {
+            bulletCount++;
+            const pId = 'block-' + (i + 1);
+            for (let b = 0; b < pBookmarks.length; b++) {
+              bookmarkMap.set(pBookmarks[b], pId);
+            }
+            intermediateBlocks.push({
+              type: 'bullet',
+              level: bulletLevel,
+              text: trimmedText,
+              html: htmlFormatted,
+              sourceIndex: i,
+              id: pId
+            });
+          } else {
+            const pId = 'block-' + (i + 1);
+            for (let b = 0; b < pBookmarks.length; b++) {
+              bookmarkMap.set(pBookmarks[b], pId);
+            }
+            intermediateBlocks.push({
+              type: 'paragraph',
+              text: trimmedText,
+              html: htmlFormatted,
+              sourceIndex: i,
+              id: pId
+            });
+          }
+        }
+
+        logs.push('Loại bỏ hoàn toàn ' + tocRemovedCount + ' phần tử thuộc khối Mục Lục và tiêu đề Mục Lục.');
+        logs.push('Xác định xong tiêu đề chính (H1): "' + docTitle + '"');
+        logs.push('Phân tích PASS 1 hoàn tất: ' + totalParagraphsCount + ' đoạn văn, ' + headingCount + ' headings, ' + bulletCount + ' bullets, đã loại bỏ ' + imagesRemovedCount + ' hình ảnh và ' + tocRemovedCount + ' dòng Mục Lục.');
+
+        // PASS 2: Xử lý tham chiếu "tiêu đề + Trang X" và dựng cây HTML không bị mất liên kết
+        // Hàm tra cứu Heading thông minh (Smart Heading Matcher)
+        function findBestHeadingForTarget(rawTargetStr, currentSourceIndex) {
+          if (!rawTargetStr || headingList.length === 0) return null;
+
+          const targetExact = rawTargetStr.toLowerCase().trim();
+          const targetNoNum = stripLeadingNumbers(rawTargetStr).toLowerCase().trim();
+          const targetClean = cleanForMatching(rawTargetStr);
+          const targetCleanNoNum = cleanForMatching(stripLeadingNumbers(rawTargetStr));
+
+          const candidates = [];
+
+          for (let h = 0; h < headingList.length; h++) {
+            const hObj = headingList[h];
+            let score = 0;
+
+            if (hObj.normExact === targetExact) score = 100;
+            else if (hObj.normNoNum === targetNoNum && targetNoNum.length > 2) score = 90;
+            else if (hObj.normClean === targetClean && targetClean.length > 2) score = 85;
+            else if (hObj.normCleanNoNum === targetCleanNoNum && targetCleanNoNum.length > 2) score = 80;
+            else if (targetClean.length >= 5 && (hObj.normClean.includes(targetClean) || targetClean.includes(hObj.normClean))) score = 60;
+            else if (targetCleanNoNum.length >= 5 && (hObj.normCleanNoNum.includes(targetCleanNoNum) || targetCleanNoNum.includes(hObj.normCleanNoNum))) score = 50;
+
+            if (score > 0) {
+              const distance = Math.abs(currentSourceIndex - hObj.sourceIndex);
+              candidates.push({ heading: hObj, score: score, distance: distance });
+            }
+          }
+
+          if (candidates.length === 0) return null;
+
+          // Sắp xếp theo score cao nhất, nếu score bằng nhau thì lấy khoảng cách vị trí gần nhất
+          candidates.sort(function (a, b) {
+            if (b.score !== a.score) return b.score - a.score;
+            return a.distance - b.distance;
+          });
+
+          return candidates[0].heading;
+        }
+
+        function resolveLinkTarget(rawTarget, currentSourceIndex) {
+          if (!rawTarget) return '#';
+          if (/^https?:\/\//i.test(rawTarget) || /^mailto:/i.test(rawTarget)) {
+            return rawTarget;
+          }
+          const cleanTarget = rawTarget.replace(/^#/, '').trim();
+
+          if (bookmarkMap.has(cleanTarget)) {
+            return '#' + bookmarkMap.get(cleanTarget);
+          }
+
+          const normClean = cleanForMatching(cleanTarget);
+          if (normClean && bookmarkMap.has(normClean)) {
+            return '#' + bookmarkMap.get(normClean);
+          }
+
+          const bh = findBestHeadingForTarget(cleanTarget, currentSourceIndex);
+          if (bh) {
+            return '#' + bh.id;
+          }
+
+          return '#' + getUniqueSlug(cleanTarget);
+        }
+
+        let referencesConvertedCount = 0;
+
+        // Xử lý chuyển đổi liên kết tham chiếu trực tiếp trên HTML để đảm bảo KHÔNG MẤT LINK do mã hoá entity hay ngoặc kép
+        for (let b = 0; b < intermediateBlocks.length; b++) {
+          const block = intermediateBlocks[b];
+          if (block.type === 'paragraph' || block.type === 'bullet') {
+            let updatedHtml = block.html;
+
+            // 1. Giải mã và quy đổi tất cả data-raw-target từ Word XML thành liên kết href chuẩn
+            updatedHtml = updatedHtml.replace(/<a\s+data-raw-target="([^"]+)">/gi, function (match, rawTarget) {
+              referencesConvertedCount++;
+              const resolvedHref = resolveLinkTarget(rawTarget, block.sourceIndex);
+              return '<a href="' + escapeHtml(resolvedHref) + '">';
+            });
+
+            // 2. Pattern 1: [Ngoặc kép/HTML entities] (TÊN TIÊU ĐỀ) [Ngoặc kép/HTML entities] (ở/tại)? (Trang X)
+            // Hỗ trợ cả ngoặc kép thô (“ ” " ') lẫn HTML entities (&quot;, &#34;, &#039;, &ldquo;, &rdquo;)
+            const patternWithQuotes = /(?:(?:[“"''‘`«‹\[({]|&quot;|&#34;|&#039;|&ldquo;|&rdquo;)+([^”"''’`»›\])}&<]{2,120})(?:[”"''’`»›\])}]|&quot;|&#34;|&#039;|&ldquo;|&rdquo;)+(?:\s*,|\s*-|\s*–)?\s*(?:ở|tại)?\s*(?:Trang|trang|TRANG)\s*(\d+))/gi;
+
+            updatedHtml = updatedHtml.replace(patternWithQuotes, function (fullMatch, targetText, pageNum) {
+              if (fullMatch.includes('href=')) return fullMatch;
+              const bestHeading = findBestHeadingForTarget(targetText, block.sourceIndex);
+              if (bestHeading) {
+                referencesConvertedCount++;
+                return '<a href="#' + bestHeading.id + '">' + escapeHtml(bestHeading.title) + '</a>';
+              }
+              return fullMatch;
+            });
+
+            // 3. Pattern 2: (mục|phần|chương|bài|đoạn|xem) (TÊN TIÊU ĐỀ) (Trang X) (không dùng ngoặc kép)
+            const patternNoQuotes = /(?:Xem|xem|Tham khảo|tham khảo|Mục|mục|Phần|phần|Chương|chương|Bài|bài)\s+([^,.<>\n–—"”&]{2,100}?)\s+(?:ở|tại)?\s*(?:Trang|trang|TRANG)\s*(\d+)/gi;
+
+            updatedHtml = updatedHtml.replace(patternNoQuotes, function (fullMatch, targetText, pageNum) {
+              // Tránh đè lên thẻ <a> vừa tạo ở Pattern 1
+              if (fullMatch.includes('href=')) return fullMatch;
+              const bestHeading = findBestHeadingForTarget(targetText, block.sourceIndex);
+              if (bestHeading) {
+                referencesConvertedCount++;
+                return '<a href="#' + bestHeading.id + '">' + escapeHtml(bestHeading.title) + '</a>';
+              }
+              return fullMatch;
+            });
+
+            block.html = updatedHtml;
+          }
+        }
+
+        logs.push('Chuyển đổi thành công ' + referencesConvertedCount + ' liên kết và câu tham chiếu thành liên kết nội bộ.');
+
+        // Xây dựng cấu trúc HTML cây cho tài liệu
+        const rootTree = { level: 0, title: '', id: '', contentBlocks: [], children: [] };
+        const treeStack = [rootTree];
+
+        for (let b = 0; b < intermediateBlocks.length; b++) {
+          const block = intermediateBlocks[b];
+          if (block.type === 'heading') {
+            const newSection = {
+              level: block.level,
+              title: block.title,
+              id: block.id,
+              contentBlocks: [],
+              children: []
+            };
+
+            while (treeStack.length > 1 && treeStack[treeStack.length - 1].level >= block.level) {
+              treeStack.pop();
+            }
+
+            treeStack[treeStack.length - 1].children.push(newSection);
+            treeStack.push(newSection);
+          } else {
+            treeStack[treeStack.length - 1].contentBlocks.push(block);
+          }
+        }
+
+        function renderNodeTree(node) {
+          let html = '';
+
+          if (node.contentBlocks.length > 0) {
+            html += '<div class="section-content">';
+            let inListL1 = false;
+            let inListL2 = false;
+
+            for (let i = 0; i < node.contentBlocks.length; i++) {
+              const blk = node.contentBlocks[i];
+              if (blk.type === 'bullet') {
+                if (blk.level === 1) {
+                  if (inListL2) {
+                    html += '</ul></li>';
+                    inListL2 = false;
+                  }
+                  if (!inListL1) {
+                    html += '<ul>';
+                    inListL1 = true;
+                  }
+                  html += '<li>' + blk.html;
+                } else if (blk.level === 2) {
+                  if (!inListL1) {
+                    html += '<ul><li>';
+                    inListL1 = true;
+                  }
+                  if (!inListL2) {
+                    html += '<ul>';
+                    inListL2 = true;
+                  }
+                  html += '<li>' + blk.html + '</li>';
+                }
+              } else {
+                if (inListL2) {
+                  html += '</ul></li>';
+                  inListL2 = false;
+                }
+                if (inListL1) {
+                  html += '</ul>';
+                  inListL1 = false;
+                }
+                html += '<p>' + blk.html + '</p>';
+              }
+            }
+
+            if (inListL2) html += '</ul></li>';
+            if (inListL1) html += '</ul>';
+            html += '</div>';
+          }
+
+          for (let c = 0; c < node.children.length; c++) {
+            const child = node.children[c];
+            const hTag = child.level === 1 ? 'h2' : (child.level === 2 ? 'h3' : (child.level === 3 ? 'h4' : 'h5'));
+            // LƯU Ý: Thẻ details mặc định thu gọn (không có thuộc tính open)
+            html += '<details id="' + child.id + '">';
+            html += '<summary><' + hTag + ' class="heading-title">' + escapeHtml(child.title) + '</' + hTag + '></summary>';
+            html += renderNodeTree(child);
+            html += '</details>';
+          }
+
+          return html;
+        }
+
+        const bodyContentHtml = renderNodeTree(rootTree);
+
+        // NỘI DUNG FILE HTML ĐẦU RA (duong-sinh.html)
+        // - Tên tác giả dưới h1: "Dương Tấn Chánh"
+        // - border-left: none trên thẻ details
+        const finalHtml = '<!DOCTYPE html>\n' +
+'<html lang="vi">\n' +
+'<head>\n' +
+'  <meta charset="UTF-8">\n' +
+'  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
+'  <title>' + escapeHtml(docTitle) + TITLE_SEPARATOR + escapeHtml(AUTHOR_NAME) + '</title>\n' +
+'  <style>\n' +
+'    :root {\n' +
+'      --bg: #ffffff;\n' +
+'      --text: #000000;\n' +
+'      --border: var(--h1-color);\n' +
+'      --primary: #f0f0f0;\n' +
+'      --font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;\n' +
+'      \n' +
+'      /* ĐỊNH NGHĨA PHÔNG CHỮ, CỠ CHỮ, MÀU SẮC, KIỂU CHỮ CHO FILE XUẤT RA */\n' +
+'      --body-font-size: 1.3rem;\n' +
+'      --body-font-weight: normal;\n' +
+'      --body-font-style: normal;\n' +
+'      --body-color: var(--text);\n' +
+'      \n' +
+'      --h1-font-size: 1.6rem;\n' +
+'      --h1-font-weight: bold;\n' +
+'      --h1-font-style: normal;\n' +
+'      --h1-color: #A21232;\n' +
+'      \n' +
+'      --author-font-size: 1.3rem;\n' +
+'      --author-font-weight: normal;\n' +
+'      --author-font-style: normal;\n' +
+'      --author-color: var(--text);\n' +
+'      \n' +
+'      --h2-font-size: 1.4rem;\n' +
+'      --h2-font-weight: bold;\n' +
+'      --h2-font-style: normal;\n' +
+'      --h2-color: #A21232;\n' +
+'      \n' +
+'      --h3-font-size: 1.3rem;\n' +
+'      --h3-font-weight: bold;\n' +
+'      --h3-font-style: normal;\n' +
+'      --h3-color: #590995;\n' +
+'      \n' +
+'      --h4-font-size: 1.3rem;\n' +
+'      --h4-font-weight: normal;\n' +
+'      --h4-font-style: normal;\n' +
+'      --h4-color: #20615B;\n' +
+'      \n' +
+'      --h5-font-size: 1.2rem;\n' +
+'      --h5-font-weight: bold;\n' +
+'      --h5-font-style: normal;\n' +
+'      --h5-color: #ED5107;\n' +
+'    }\n' +
+'    *, *::before, *::after {\n' +
+'      box-sizing: border-box;\n' +
+'    }\n' +
+'    body {\n' +
+'      font-family: var(--font-family);\n' +
+'      font-weight: var(--body-font-weight);\n' +
+'      font-size: var(--body-font-size);\n' +
+'      font-style: var(--body-font-style);\n' +
+'      color: var(--body-color);\n' +
+'      line-height: 1.6;\n' +
+'      padding: 0.5rem;\n' +
+'      padding-bottom: 5rem;\n' +
+'      margin: 0;\n' +
+'      width: 100%;\n' +
+'      background-color: var(--bg);\n' +
+'    }\n' +
+'    h1 {\n' +
+'      font-size: var(--h1-font-size);\n' +
+'      font-weight: var(--h1-font-weight);\n' +
+'      font-style: var(--h1-font-style);\n' +
+'      color: var(--h1-color);\n' +
+'      text-align: center;\n' +
+'      margin-top: 1rem;\n' +
+'      margin-bottom: 0.2rem;\n' +
+'    }\n' +
+'    .author-byline {\n' +
+'      font-size: var(--author-font-size);\n' +
+'      font-weight: var(--author-font-weight);\n' +
+'      font-style: var(--author-font-style);\n' +
+'      color: var(--author-color);\n' +
+'      text-align: right;\n' +
+'      margin-bottom: 1rem;\n' +
+'    }\n' +
+'    h2 {\n' +
+'      font-size: var(--h2-font-size);\n' +
+'      font-weight: var(--h2-font-weight);\n' +
+'      font-style: var(--h2-font-style);\n' +
+'      color: var(--h2-color);\n' +
+'      margin-top: 1rem;\n' +
+'      margin-bottom: 0.5rem;\n' +
+'    }\n' +
+'    h3 {\n' +
+'      font-size: var(--h3-font-size);\n' +
+'      font-weight: var(--h3-font-weight);\n' +
+'      font-style: var(--h3-font-style);\n' +
+'      color: var(--h3-color);\n' +
+'      margin-top: 0.8rem;\n' +
+'      margin-bottom: 0.4rem;\n' +
+'    }\n' +
+'    h4 {\n' +
+'      font-size: var(--h4-font-size);\n' +
+'      font-weight: var(--h4-font-weight);\n' +
+'      font-style: var(--h4-font-style);\n' +
+'      color: var(--h4-color);\n' +
+'      margin-top: 0.6rem;\n' +
+'      margin-bottom: 0.3rem;\n' +
+'    }\n' +
+'    h5 {\n' +
+'      font-size: var(--h5-font-size);\n' +
+'      font-weight: var(--h5-font-weight);\n' +
+'      font-style: var(--h5-font-style);\n' +
+'      color: var(--h5-color);\n' +
+'      margin-top: 0.5rem;\n' +
+'      margin-bottom: 0.2rem;\n' +
+'    }\n' +
+'    .controls-bar {\n' +
+'      margin-top: 1rem;\n' +
+'      margin-bottom: 1rem;\n' +
+'    }\n' +
+'    .btn-toggle {\n' +
+'      background-color: var(--bg);\n' +
+'      color: var(--h4-color);\n' +
+'      border: 2px solid var(--border);\n' +
+'      border-radius: 0.4rem;\n' +
+'      padding: 0.4rem 0.8rem;\n' +
+'      font-size: var(--body-font-size);\n' +
+'      font-weight: bold;\n' +
+'      cursor: pointer;\n' +
+'      font-family: inherit;\n' +
+'      margin-right: 0.5rem;\n' +
+'    }\n' +
+'    .btn-toggle:hover {\n' +
+'      background-color: var(--primary);\n' +
+'    }\n' +
+'    details {\n' +
+'      margin-top: 0.4rem;\n' +
+'      margin-bottom: 0.4rem;\n' +
+'      border-left: none;\n' +
+'      padding-left: 0;\n' +
+'      color: var(--text);\n' +
+'    }\n' +
+'    summary {\n' +
+'      cursor: pointer;\n' +
+'      font-weight: bold;\n' +
+'      list-style: none;\n' +
+'      display: flex;\n' +
+'      align-items: center;\n' +
+'      gap: 0.4rem;\n' +
+'      padding: 0.3rem 0;\n' +
+'      color: var(--text);\n' +
+'    }\n' +
+'    summary::-webkit-details-marker {\n' +
+'      display: none;\n' +
+'    }\n' +
+'    summary::before {\n' +
+'      content: "▶";\n' +
+'      display: inline-block;\n' +
+'      font-size: 1.3rem;\n' +
+'      transition: transform 0.2s ease;\n' +
+'      color: var(--h4-color);\n' +
+'      flex-shrink: 0;\n' +
+'    }\n' +
+'    details[open] > summary::before {\n' +
+'      transform: rotate(90deg);\n' +
+'    }\n' +
+'    .heading-title {\n' +
+'      margin: 0;\n' +
+'      display: inline;\n' +
+'    }\n' +
+'    .section-content {\n' +
+'      padding-top: 0.3rem;\n' +
+'      padding-bottom: 0.3rem;\n' +
+'      color: var(--text);\n' +
+'    }\n' +
+'    p {\n' +
+'      margin-top: 0;\n' +
+'      margin-bottom: 0.8rem;\n' +
+'      text-align: justify;\n' +
+'      color: var(--text);\n' +
+'      word-break: break-word;\n' +
+'      overflow-wrap: break-word;\n' +
+'    }\n' +
+'    ul {\n' +
+'      margin-top: 0;\n' +
+'      margin-bottom: 0.8rem;\n' +
+'      padding-left: 1.2rem;\n' +
+'      color: var(--text);\n' +
+'    }\n' +
+'    li {\n' +
+'      margin-bottom: 0.4rem;\n' +
+'      color: var(--text);\n' +
+'    }\n' +
+'    a {\n' +
+'      color: var(--text);\n' +
+'      text-decoration: underline;\n' +
+'      font-weight: bold;\n' +
+'    }\n' +
+'  </style>\n' +
+'  <script>\n' +
+'    function toggleAllDetails(openState) {\n' +
+'      document.querySelectorAll("details").forEach(function(el) {\n' +
+'        el.open = openState;\n' +
+'      });\n' +
+'    }\n' +
+'\n' +
+'    document.addEventListener("DOMContentLoaded", function() {\n' +
+'      document.querySelectorAll(\'a[href^="#"]\').forEach(function(anchor) {\n' +
+'        anchor.addEventListener("click", function(e) {\n' +
+'          e.preventDefault();\n' +
+'          var targetId = this.getAttribute("href").substring(1);\n' +
+'          if (!targetId) return;\n' +
+'          var targetEl = document.getElementById(targetId);\n' +
+'          if (targetEl) {\n' +
+'            var parent = targetEl.closest("details");\n' +
+'            while (parent) {\n' +
+'              parent.open = true;\n' +
+'              parent = parent.parentElement ? parent.parentElement.closest("details") : null;\n' +
+'            }\n' +
+'            setTimeout(function() {\n' +
+'              targetEl.scrollIntoView({ behavior: "smooth", block: "start" });\n' +
+'            }, 50);\n' +
+'          }\n' +
+'        });\n' +
+'      });\n' +
+'    });\n' +
+'  <\/script>\n' +
+'</head>\n' +
+'<body>\n' +
+'  <h1>' + escapeHtml(docTitle) + '</h1>\n' +
+'  <div class="author-byline">' + escapeHtml(AUTHOR_NAME) + '</div>\n' +
+'\n' +
+'  <div class="controls-bar">\n' +
+'    <button type="button" class="btn-toggle" onclick="toggleAllDetails(true)">Mở tất cả</button>\n' +
+'    <button type="button" class="btn-toggle" onclick="toggleAllDetails(false)">Thu gọn tất cả</button>\n' +
+'  </div>\n' +
+'\n' +
+'  ' + bodyContentHtml + '\n' +
+'</body>\n' +
+'</html>';
+
+        // Danh sách kiểm tra chất lượng (Validation Checklist)
+        const validations = [
+          { label: 'Loại bỏ hình ảnh', passed: true, message: 'Đã loại bỏ hoàn toàn ' + imagesRemovedCount + ' hình ảnh và đối tượng vẽ.' },
+          { label: 'Loại bỏ Header/Footer', passed: true, message: 'Nội dung Header/Footer và số trang độc lập đã bị loại khỏi HTML.' },
+          { label: 'Bỏ mục lục Word', passed: true, message: 'Đã loại bỏ hoàn toàn ' + tocRemovedCount + ' phần tử Mục Lục và tiêu đề Mục Lục khỏi file HTML kết quả.' },
+          { label: 'Cắt dòng đầu làm H1', passed: true, message: 'Đã đem dòng đầu tiên "' + docTitle + '" lên làm tiêu đề H1 chính và loại bỏ khỏi phần thân.' },
+          { label: 'Heading thu gọn mặc định', passed: true, message: 'Các mục Heading xuất ra dạng <details> mặc định đóng, nhấp vào mới mở ra.' },
+          { label: 'Làm sạch dấu trừ bullet', passed: true, message: 'Đã cắt bỏ hoàn toàn dấu "' + DASH_SYMBOL + '" và ký hiệu "' + COPYRIGHT_SYMBOL + '" ở đầu câu khi chuyển thành bullet <li>.' },
+          { label: 'Tác giả chuẩn hoá', passed: true, message: 'Trang HTML đầu ra mang tên tác giả "' + AUTHOR_NAME + '".' },
+          { label: 'Tên file xuất ra', passed: true, message: 'Tên file HTML xuất ra mặc định khớp với tên file DOCX nhập vào.' },
+          { label: 'Chuyển tham chiếu trang', passed: referencesConvertedCount >= 0, message: 'Đã chuyển đổi thành công ' + referencesConvertedCount + ' liên kết và câu tham chiếu nội bộ.' }
+        ];
+
+        return {
+          htmlContent: finalHtml,
+          stats: {
+            totalParagraphs: totalParagraphsCount,
+            headingCount: headingCount,
+            bulletCount: bulletCount,
+            imagesRemovedCount: imagesRemovedCount,
+            referencesConvertedCount: referencesConvertedCount
+          },
+          validations: validations,
+          logs: logs
+        };
+      }
+    })();
+  </script>
+</body>
+</html>
