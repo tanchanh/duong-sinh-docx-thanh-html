@@ -310,11 +310,8 @@
   <script>
     (function () {
       // ==========================================
-      // ĐỊNH NGHĨA CÁC HẰNG SỐ KÝ HIỆU & THÔNG TIN TÁC GIẢ
-      // (Dễ dàng thay đổi ký tự hoặc thông tin ở đây)
+      // ĐỊNH NGHĨA CÁC HẰNG SỐ & THÔNG TIN TÁC GIẢ
       // ==========================================
-      const COPYRIGHT_SYMBOL = '©';          // Ký hiệu bản quyền / bullet mức 1
-      const DASH_SYMBOL = '-';               // Dấu trừ bullet mức 2
       const TITLE_SEPARATOR = ' - ';         // Dấu phân cách tiêu đề & tác giả
       const AUTHOR_NAME = 'Dương Tấn Chánh';    // Tên tác giả đầy đủ
       const AUTHOR_SHORT_NAME = 'D.T.Chánh';   // Tên tác giả viết tắt
@@ -715,6 +712,9 @@
           return str.replace(/^[\d\.\s:\-_BàiChươngSectionphầnmụcbài]+/gi, '').trim();
         }
 
+        // Ngăn xếp lưu mốc thụt lề theo quy ước chuẩn Markdown (tính tương đối, mỗi cấp con thụt lề thêm 2-5 spaces)
+        let listIndentStack = [];
+
         for (let i = 0; i < rawParagraphs.length; i++) {
           const pNode = rawParagraphs[i];
 
@@ -772,7 +772,7 @@
               const ilvlNode = numPr.getElementsByTagName('w:ilvl')[0];
               if (ilvlNode) {
                 const ilvlVal = parseInt(ilvlNode.getAttribute('w:val') || '0', 10);
-                bulletLevel = ilvlVal === 0 ? 1 : 2;
+                bulletLevel = Math.max(1, ilvlVal + 1);
               } else {
                 bulletLevel = 1;
               }
@@ -928,32 +928,69 @@
             continue; // LOẠI BỎ DÒNG ĐẦU KHỎI NỘI DUNG THÂN
           }
 
-          // Phân loại bullet tự động nếu bắt đầu bằng COPYRIGHT_SYMBOL hoặc DASH_SYMBOL / – / — / * / +
+          // Nhận diện bullet và phân cấp mức độ thụt lề theo quy ước chuẩn Markdown (- , * , + , • )
+          // (Cấp con thụt lề tương đối từ 2-5 khoảng trắng so với mốc của cấp cha liền trước)
           if (!isBullet) {
-            if (trimmedText.startsWith(COPYRIGHT_SYMBOL)) {
+            const mdBulletMatch = plainText.match(/^([ \t]*)([-*+•–—])(?:\s+)(.*)$/s);
+            if (mdBulletMatch) {
               isBullet = true;
-              bulletLevel = 1;
-            } else {
-              const dashRegex = new RegExp('^[\\s' + escapeRegExp(DASH_SYMBOL) + '–—*+]+\\s*');
-              if (dashRegex.test(trimmedText)) {
-                isBullet = true;
-                bulletLevel = 2;
+              const indentStr = mdBulletMatch[1] || '';
+              // 1 tab = 4 spaces
+              const rawIndent = indentStr.replace(/\t/g, '    ').length;
+
+              if (listIndentStack.length === 0) {
+                // Khởi đầu danh sách (Cấp 1)
+                listIndentStack.push(rawIndent);
+                bulletLevel = 1;
+              } else {
+                const currentTop = listIndentStack[listIndentStack.length - 1];
+                if (rawIndent >= currentTop + 2) {
+                  // Thụt lề sâu hơn cấp trước từ 2-5 spaces
+                  while (rawIndent - listIndentStack[listIndentStack.length - 1] >= 2) {
+                    const lastIndent = listIndentStack[listIndentStack.length - 1];
+                    const diff = rawIndent - lastIndent;
+                    if (diff <= 5) {
+                      listIndentStack.push(rawIndent);
+                      break;
+                    } else {
+                      listIndentStack.push(lastIndent + 4);
+                    }
+                  }
+                  bulletLevel = listIndentStack.length;
+                } else if (rawIndent < currentTop) {
+                  // Giảm thụt lề: lùi về cấp cha tương ứng
+                  while (listIndentStack.length > 1) {
+                    const topVal = listIndentStack[listIndentStack.length - 1];
+                    if (rawIndent < topVal - 1) {
+                      listIndentStack.pop();
+                    } else {
+                      break;
+                    }
+                  }
+                  bulletLevel = listIndentStack.length;
+                } else {
+                  // Cùng mức thụt lề với cấp hiện tại
+                  bulletLevel = listIndentStack.length;
+                }
               }
+            } else {
+              // Đoạn văn bản thông thường -> reset ngăn xếp danh sách
+              listIndentStack = [];
             }
+          } else {
+            // Bullet có sẵn từ cấu trúc Word XML (w:numPr)
+            listIndentStack = [];
           }
 
-          // QUY TẮC: Khi câu đã chuyển thành bullet (mức 1 hoặc mức 2), BỎ HOÀN TOÀN DẤU TRỪ VÀ KÝ HIỆU BULLET Ở ĐẦU CÂU
+          // QUY TẮC MARKDOWN: Khi câu là bullet, làm sạch tiền tố bullet (- , * , + , • ) ở đầu câu
           if (isBullet && headingLevel === 0) {
-            const cleanPattern = '[\\s' + escapeRegExp(DASH_SYMBOL) + '•–—*+' + escapeRegExp(COPYRIGHT_SYMBOL) + ']+';
-            const bulletCleanRegex = new RegExp('^' + cleanPattern + '\\s*');
-            const htmlCleanRegex = new RegExp('^(?:<[^>]+>)*' + cleanPattern + '(?:\\s*<[^>]+>)*\\s*');
-
-            trimmedText = trimmedText.replace(bulletCleanRegex, '');
-            // Làm sạch cả htmlFormatted để loại bỏ dấu bullet/dấu trừ ở đầu câu khi xuất ra <li>
-            htmlFormatted = htmlFormatted.replace(htmlCleanRegex, '');
+            trimmedText = trimmedText.replace(/^[-*+•–—]\s+/, '').trim();
+            // Làm sạch cả htmlFormatted để loại bỏ ký hiệu bullet ở đầu câu khi xuất ra <li>
+            htmlFormatted = htmlFormatted.replace(/^(?:<[^>]+>)*[ \t]*[-*+•–—]\s+(?:<[^>]+>)*/i, '').trim();
           }
 
           if (headingLevel > 0) {
+            listIndentStack = []; // Heading ngắt danh sách -> reset ngăn xếp
             headingCount++;
             
             let fullHeadingTitle = normalizeVietnameseTypography(trimmedText);
@@ -1175,48 +1212,43 @@
 
           if (node.contentBlocks.length > 0) {
             html += '<div class="section-content">';
-            let inListL1 = false;
-            let inListL2 = false;
+            let listDepth = 0;
+
+            function openToListLevel(targetLevel) {
+              let res = '';
+              while (listDepth < targetLevel) {
+                res += '<ul>';
+                listDepth++;
+              }
+              return res;
+            }
+
+            function closeToListLevel(targetLevel) {
+              let res = '';
+              while (listDepth > targetLevel) {
+                res += '</ul>';
+                listDepth--;
+              }
+              return res;
+            }
 
             for (let i = 0; i < node.contentBlocks.length; i++) {
               const blk = node.contentBlocks[i];
               if (blk.type === 'bullet') {
-                if (blk.level === 1) {
-                  if (inListL2) {
-                    html += '</ul></li>';
-                    inListL2 = false;
-                  }
-                  if (!inListL1) {
-                    html += '<ul>';
-                    inListL1 = true;
-                  }
-                  html += '<li>' + blk.html;
-                } else if (blk.level === 2) {
-                  if (!inListL1) {
-                    html += '<ul><li>';
-                    inListL1 = true;
-                  }
-                  if (!inListL2) {
-                    html += '<ul>';
-                    inListL2 = true;
-                  }
-                  html += '<li>' + blk.html + '</li>';
+                const targetLvl = Math.max(1, blk.level || 1);
+                if (targetLvl > listDepth) {
+                  html += openToListLevel(targetLvl);
+                } else if (targetLvl < listDepth) {
+                  html += closeToListLevel(targetLvl);
                 }
+                html += '<li>' + blk.html + '</li>';
               } else {
-                if (inListL2) {
-                  html += '</ul></li>';
-                  inListL2 = false;
-                }
-                if (inListL1) {
-                  html += '</ul>';
-                  inListL1 = false;
-                }
+                html += closeToListLevel(0);
                 html += '<p>' + blk.html + '</p>';
               }
             }
 
-            if (inListL2) html += '</ul></li>';
-            if (inListL1) html += '</ul>';
+            html += closeToListLevel(0);
             html += '</div>';
           }
 
@@ -1485,7 +1517,7 @@
           { label: 'Bỏ mục lục Word', passed: true, message: 'Đã loại bỏ hoàn toàn ' + tocRemovedCount + ' phần tử Mục Lục và tiêu đề Mục Lục khỏi file HTML kết quả.' },
           { label: 'Cắt dòng đầu làm H1', passed: true, message: 'Đã đem dòng đầu tiên "' + docTitle + '" lên làm tiêu đề H1 chính và loại bỏ khỏi phần thân.' },
           { label: 'Heading thu gọn mặc định', passed: true, message: 'Các mục Heading xuất ra dạng <details> mặc định đóng, nhấp vào mới mở ra.' },
-          { label: 'Làm sạch dấu trừ bullet', passed: true, message: 'Đã cắt bỏ hoàn toàn dấu "' + DASH_SYMBOL + '" và ký hiệu "' + COPYRIGHT_SYMBOL + '" ở đầu câu khi chuyển thành bullet <li>.' },
+          { label: 'Chuẩn hoá bullet Markdown', passed: true, message: 'Đã phân cấp bullet theo khoảng cách thụt lề chuẩn Markdown và làm sạch tiền tố (- , * , + , • ) ở đầu câu khi chuyển thành thẻ <li>.' },
           { label: 'Tác giả chuẩn hoá', passed: true, message: 'Trang HTML đầu ra mang tên tác giả "' + AUTHOR_NAME + '".' },
           { label: 'Tên file xuất ra', passed: true, message: 'Tên file HTML xuất ra mặc định khớp với tên file DOCX nhập vào.' },
           { label: 'Chuyển tham chiếu trang', passed: referencesConvertedCount >= 0, message: 'Đã chuyển đổi thành công ' + referencesConvertedCount + ' liên kết và câu tham chiếu nội bộ.' }
