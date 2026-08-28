@@ -1440,6 +1440,27 @@
 '    .btn-toggle:hover {\n' +
 '      background-color: #666666;\n' +
 '    }\n' +
+'    .btn-scroll-top {\n' +
+'      position: fixed;\n' +
+'      bottom: 1.2rem;\n' +
+'      right: 1.2rem;\n' +
+'      width: 2.8rem;\n' +
+'      height: 2.8rem;\n' +
+'      display: flex;\n' +
+'      align-items: center;\n' +
+'      justify-content: center;\n' +
+'      background-color: #808080;\n' +
+'      color: #ffffff;\n' +
+'      border: none;\n' +
+'      border-radius: 0.4rem;\n' +
+'      cursor: pointer;\n' +
+'      box-sizing: border-box;\n' +
+'      z-index: 1000;\n' +
+'      transition: background-color 0.2s ease;\n' +
+'    }\n' +
+'    .btn-scroll-top:hover {\n' +
+'      background-color: #666666;\n' +
+'    }\n' +
 '    details {\n' +
 '      margin-top: 0.5rem;\n' +
 '      margin-bottom: 0.5rem;\n' +
@@ -1623,6 +1644,12 @@
 '      if (btnClose) {\n' +
 '        btnClose.addEventListener("click", function() { toggleAllDetails(false); });\n' +
 '      }\n' +
+'      var btnTop = document.getElementById("btnScrollTop");\n' +
+'      if (btnTop) {\n' +
+'        btnTop.addEventListener("click", function() {\n' +
+'          window.scrollTo({ top: 0, behavior: "smooth" });\n' +
+'        });\n' +
+'      }\n' +
 '      document.querySelectorAll(\'a[href^="#"]\').forEach(function(anchor) {\n' +
 '        anchor.addEventListener("click", handleAnchorClick);\n' +
 '      });\n' +
@@ -1645,6 +1672,13 @@
 '  </div>\n' +
 '\n' +
 '  ' + bodyContentHtml + '\n' +
+'\n' +
+'  <button type="button" id="btnScrollTop" class="btn-scroll-top" aria-label="Quay về đầu trang" title="Quay về đầu trang">\n' +
+'    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">\n' +
+'      <line x1="12" y1="19" x2="12" y2="5"></line>\n' +
+'      <polyline points="5 12 12 5 19 12"></polyline>\n' +
+'    </svg>\n' +
+'  </button>\n' +
 '</body>\n' +
 '</html>';
 
@@ -1656,6 +1690,7 @@
           { label: 'Cắt dòng đầu làm H1', passed: true, message: 'Đã đem dòng đầu tiên "' + docTitle + '" lên làm tiêu đề H1 chính và loại bỏ khỏi phần thân.' },
           { label: 'Màu sắc & Phân cấp Heading', passed: true, message: 'Heading 1 và Heading 2 (Cấp 1) mang màu tím mận sẫm (#4A154B), Heading 3-5 mang màu nhận diện đặc trưng (#782813, #9E6510, #365E14) thụt lề theo cấp bậc, tam giác xoay mượt mà, khối nội dung viền 3px đồng màu và trải rộng tối đa cho điện thoại.' },
           { label: 'Heading thu gọn mặc định', passed: true, message: 'Các mục Heading xuất ra dạng <details> mặc định đóng, nhấp vào mới mở ra.' },
+          { label: 'Nút cuộn đầu trang', passed: true, message: 'Nút vuông cố định ở góc dưới bên phải với biểu tượng mũi tên SVG giúp cuộn mượt về đầu trang.' },
           { label: 'Chuẩn hoá bullet Markdown', passed: true, message: 'Đã phân cấp bullet theo khoảng cách thụt lề chuẩn Markdown và làm sạch tiền tố (- , * , + , • ) ở đầu câu khi chuyển thành thẻ <li>.' },
           { label: 'Tác giả chuẩn hoá', passed: true, message: 'Trang HTML đầu ra mang tên tác giả "' + AUTHOR_NAME + '".' },
           { label: 'Tên file xuất ra', passed: true, message: 'Tên file HTML xuất ra mặc định khớp với tên file DOCX nhập vào.' },
