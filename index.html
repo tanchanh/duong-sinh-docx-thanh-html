@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chuyển Tập Tin "Dưỡng Sinh.DOCX" Thành HTML - D.T.Chánh</title>
+  <title>Chuyển Tập Tin "Dưỡng Sinh.DOCX" Thành HTML - Dương Tấn Chánh</title>
   <script src="js/jszip.min.js"></script>
   <style>
     :root {
@@ -11,7 +11,7 @@
       --text: #000000;
       --border: #000000;
       --primary: #f0f0f0;
-      --error: #cc0000;
+      --error: #FF2040;
       --font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
 
@@ -22,7 +22,7 @@
     body {
       font-family: var(--font-family);
       font-weight: normal;
-      font-size: 1.0rem;
+      font-size: 1.2rem;
       line-height: 1.6;
       margin: 0;
       padding: 0.5rem;
@@ -51,7 +51,7 @@
     }
 
     h2 {
-      font-size: 1.3rem;
+      font-size: 1.4rem;
       font-weight: bold;
       color: var(--text);
       margin-top: 1rem;
@@ -59,18 +59,26 @@
     }
 
     h3 {
-      font-size: 1.1rem;
+      font-size: 1.3rem;
       font-weight: bold;
       color: var(--text);
       margin-top: 0.8rem;
       margin-bottom: 0.4rem;
     }
 
+    h4 {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--text);
+      margin-top: 0.6rem;
+      margin-bottom: 0.3rem;
+    }
+
     p {
       margin-top: 0;
       margin-bottom: 0.8rem;
       text-align: justify;
-      word-break: break-word;
+      word-break: normal;
       overflow-wrap: break-word;
     }
 
@@ -214,7 +222,7 @@
 </head>
 <body>
   <h1>Chuyển Tập Tin "Dưỡng Sinh.DOCX" Thành HTML</h1>
-  <div class="author-byline">D.T.Chánh</div>
+  <div class="author-byline">Dương Tấn Chánh</div>
 
   <!-- Khối 1: Chọn tập tin -->
   <div class="card-box">
@@ -1211,7 +1219,8 @@
           let html = '';
 
           if (node.contentBlocks.length > 0) {
-            html += '<div class="section-content">';
+            const lvlClass = node.level > 0 ? ' content-level-' + node.level : ' content-root';
+            html += '<div class="section-content' + lvlClass + '">';
             let listDepth = 0;
 
             function openToListLevel(targetLevel) {
@@ -1255,9 +1264,10 @@
           for (let c = 0; c < node.children.length; c++) {
             const child = node.children[c];
             const hTag = child.level === 1 ? 'h2' : (child.level === 2 ? 'h3' : (child.level === 3 ? 'h4' : 'h5'));
+            const lvlNum = child.level;
             // LƯU Ý: Thẻ details mặc định thu gọn (không có thuộc tính open)
-            html += '<details id="' + child.id + '">';
-            html += '<summary><' + hTag + ' class="heading-title">' + escapeHtml(child.title) + '</' + hTag + '></summary>';
+            html += '<details id="' + child.id + '" class="details-level-' + lvlNum + '">';
+            html += '<summary class="summary-level-' + lvlNum + '"><' + hTag + ' class="heading-title">' + escapeHtml(child.title) + '</' + hTag + '></summary>';
             html += renderNodeTree(child);
             html += '</details>';
           }
@@ -1269,7 +1279,8 @@
 
         // NỘI DUNG FILE HTML ĐẦU RA (duong-sinh.html)
         // - Tên tác giả dưới h1: "Dương Tấn Chánh"
-        // - border-left: none trên thẻ details
+        // - Trình bày màu sắc Heading 1-4 chuẩn theo ảnh mẫu
+        // - Tối ưu hiển thị văn bản bề rộng tối đa trên điện thoại màn hình nhỏ kèm bao viền màu theo từng cấp
         const finalHtml = '<!DOCTYPE html>\n' +
 '<html lang="vi">\n' +
 '<head>\n' +
@@ -1280,12 +1291,12 @@
 '    :root {\n' +
 '      --bg: #ffffff;\n' +
 '      --text: #000000;\n' +
-'      --border: var(--h1-color);\n' +
+'      --border: #000000;\n' +
 '      --primary: #f0f0f0;\n' +
 '      --font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;\n' +
 '      \n' +
 '      /* ĐỊNH NGHĨA PHÔNG CHỮ, CỠ CHỮ, MÀU SẮC, KIỂU CHỮ CHO FILE XUẤT RA */\n' +
-'      --body-font-size: 1.3rem;\n' +
+'      --body-font-size: 1.2rem;\n' +
 '      --body-font-weight: normal;\n' +
 '      --body-font-style: normal;\n' +
 '      --body-color: var(--text);\n' +
@@ -1293,32 +1304,38 @@
 '      --h1-font-size: 1.6rem;\n' +
 '      --h1-font-weight: bold;\n' +
 '      --h1-font-style: normal;\n' +
-'      --h1-color: #A21232;\n' +
+'      --h1-color: #000000;\n' +
 '      \n' +
-'      --author-font-size: 1.3rem;\n' +
+'      --author-font-size: 1.2rem;\n' +
 '      --author-font-weight: normal;\n' +
 '      --author-font-style: normal;\n' +
 '      --author-color: var(--text);\n' +
 '      \n' +
+'      /* BẢNG MÀU HEADING 1-4 THEO ĐÚNG ẢNH MẪU */\n' +
+'      --color-h2: #4A154B; /* Cấp 1 (H2) - Tím mận sẫm */\n' +
+'      --color-h3: #782813; /* Cấp 2 (H3) - Nâu đỏ sẫm */\n' +
+'      --color-h4: #9E6510; /* Cấp 3 (H4) - Nâu vàng hổ phách */\n' +
+'      --color-h5: #365E14; /* Cấp 4 (H5) - Xanh lục rêu sẫm */\n' +
+'      \n' +
 '      --h2-font-size: 1.4rem;\n' +
 '      --h2-font-weight: bold;\n' +
 '      --h2-font-style: normal;\n' +
-'      --h2-color: #A21232;\n' +
+'      --h2-color: #ffffff;\n' +
 '      \n' +
 '      --h3-font-size: 1.3rem;\n' +
 '      --h3-font-weight: bold;\n' +
 '      --h3-font-style: normal;\n' +
-'      --h3-color: #590995;\n' +
+'      --h3-color: #ffffff;\n' +
 '      \n' +
-'      --h4-font-size: 1.3rem;\n' +
-'      --h4-font-weight: normal;\n' +
+'      --h4-font-size: 1.2rem;\n' +
+'      --h4-font-weight: bold;\n' +
 '      --h4-font-style: normal;\n' +
-'      --h4-color: #20615B;\n' +
+'      --h4-color: #ffffff;\n' +
 '      \n' +
 '      --h5-font-size: 1.2rem;\n' +
 '      --h5-font-weight: bold;\n' +
 '      --h5-font-style: normal;\n' +
-'      --h5-color: #ED5107;\n' +
+'      --h5-color: #ffffff;\n' +
 '    }\n' +
 '    *, *::before, *::after {\n' +
 '      box-sizing: border-box;\n' +
@@ -1344,6 +1361,8 @@
 '      text-align: center;\n' +
 '      margin-top: 1rem;\n' +
 '      margin-bottom: 0.2rem;\n' +
+'      word-break: normal;\n' +
+'      overflow-wrap: break-word;\n' +
 '    }\n' +
 '    .author-byline {\n' +
 '      font-size: var(--author-font-size);\n' +
@@ -1353,73 +1372,51 @@
 '      text-align: right;\n' +
 '      margin-bottom: 1rem;\n' +
 '    }\n' +
-'    h2 {\n' +
-'      font-size: var(--h2-font-size);\n' +
-'      font-weight: var(--h2-font-weight);\n' +
-'      font-style: var(--h2-font-style);\n' +
-'      color: var(--h2-color);\n' +
-'      margin-top: 1rem;\n' +
-'      margin-bottom: 0.5rem;\n' +
-'    }\n' +
-'    h3 {\n' +
-'      font-size: var(--h3-font-size);\n' +
-'      font-weight: var(--h3-font-weight);\n' +
-'      font-style: var(--h3-font-style);\n' +
-'      color: var(--h3-color);\n' +
-'      margin-top: 0.8rem;\n' +
-'      margin-bottom: 0.4rem;\n' +
-'    }\n' +
-'    h4 {\n' +
-'      font-size: var(--h4-font-size);\n' +
-'      font-weight: var(--h4-font-weight);\n' +
-'      font-style: var(--h4-font-style);\n' +
-'      color: var(--h4-color);\n' +
-'      margin-top: 0.6rem;\n' +
-'      margin-bottom: 0.3rem;\n' +
-'    }\n' +
-'    h5 {\n' +
-'      font-size: var(--h5-font-size);\n' +
-'      font-weight: var(--h5-font-weight);\n' +
-'      font-style: var(--h5-font-style);\n' +
-'      color: var(--h5-color);\n' +
-'      margin-top: 0.5rem;\n' +
-'      margin-bottom: 0.2rem;\n' +
-'    }\n' +
 '    .controls-bar {\n' +
+'      display: flex;\n' +
+'      flex-wrap: wrap;\n' +
+'      gap: 0.5rem;\n' +
 '      margin-top: 1rem;\n' +
 '      margin-bottom: 1rem;\n' +
+'      width: 100%;\n' +
 '    }\n' +
 '    .btn-toggle {\n' +
 '      background-color: var(--bg);\n' +
-'      color: var(--h4-color);\n' +
+'      color: var(--text);\n' +
 '      border: 2px solid var(--border);\n' +
 '      border-radius: 0.4rem;\n' +
-'      padding: 0.4rem 0.8rem;\n' +
+'      padding: 0.5rem 1rem;\n' +
 '      font-size: var(--body-font-size);\n' +
 '      font-weight: bold;\n' +
 '      cursor: pointer;\n' +
 '      font-family: inherit;\n' +
 '      margin-right: 0.5rem;\n' +
+'      margin-bottom: 0.5rem;\n' +
+'      box-sizing: border-box;\n' +
 '    }\n' +
 '    .btn-toggle:hover {\n' +
 '      background-color: var(--primary);\n' +
 '    }\n' +
 '    details {\n' +
-'      margin-top: 0.4rem;\n' +
-'      margin-bottom: 0.4rem;\n' +
-'      border-left: none;\n' +
-'      padding-left: 0;\n' +
-'      color: var(--text);\n' +
+'      margin-top: 0.5rem;\n' +
+'      margin-bottom: 0.5rem;\n' +
+'      width: 100%;\n' +
+'      box-sizing: border-box;\n' +
 '    }\n' +
 '    summary {\n' +
 '      cursor: pointer;\n' +
-'      font-weight: bold;\n' +
 '      list-style: none;\n' +
-'      display: flex;\n' +
+'      display: inline-flex;\n' +
 '      align-items: center;\n' +
 '      gap: 0.4rem;\n' +
-'      padding: 0.3rem 0;\n' +
-'      color: var(--text);\n' +
+'      padding: 0.4rem 0.8rem;\n' +
+'      border-radius: 0.4rem;\n' +
+'      color: #ffffff;\n' +
+'      max-width: 100%;\n' +
+'      box-sizing: border-box;\n' +
+'      user-select: none;\n' +
+'      word-break: normal;\n' +
+'      overflow-wrap: break-word;\n' +
 '    }\n' +
 '    summary::-webkit-details-marker {\n' +
 '      display: none;\n' +
@@ -1427,40 +1424,106 @@
 '    summary::before {\n' +
 '      content: "▶";\n' +
 '      display: inline-block;\n' +
-'      font-size: 1.3rem;\n' +
+'      font-size: 1.0rem;\n' +
 '      transition: transform 0.2s ease;\n' +
-'      color: var(--h4-color);\n' +
+'      color: #ffffff;\n' +
 '      flex-shrink: 0;\n' +
 '    }\n' +
 '    details[open] > summary::before {\n' +
 '      transform: rotate(90deg);\n' +
 '    }\n' +
+'    .summary-level-1 {\n' +
+'      background-color: var(--color-h2);\n' +
+'      margin-left: 0;\n' +
+'    }\n' +
+'    .summary-level-2 {\n' +
+'      background-color: var(--color-h3);\n' +
+'      margin-left: 0.8rem;\n' +
+'    }\n' +
+'    .summary-level-3 {\n' +
+'      background-color: var(--color-h4);\n' +
+'      margin-left: 1.6rem;\n' +
+'    }\n' +
+'    .summary-level-4 {\n' +
+'      background-color: var(--color-h5);\n' +
+'      margin-left: 2.4rem;\n' +
+'    }\n' +
 '    .heading-title {\n' +
 '      margin: 0;\n' +
 '      display: inline;\n' +
+'      color: #ffffff;\n' +
+'      word-break: normal;\n' +
+'      overflow-wrap: break-word;\n' +
+'    }\n' +
+'    h2.heading-title {\n' +
+'      font-size: var(--h2-font-size);\n' +
+'      font-weight: bold;\n' +
+'    }\n' +
+'    h3.heading-title {\n' +
+'      font-size: var(--h3-font-size);\n' +
+'      font-weight: bold;\n' +
+'    }\n' +
+'    h4.heading-title {\n' +
+'      font-size: var(--h4-font-size);\n' +
+'      font-weight: bold;\n' +
+'    }\n' +
+'    h5.heading-title {\n' +
+'      font-size: var(--h5-font-size);\n' +
+'      font-weight: bold;\n' +
 '    }\n' +
 '    .section-content {\n' +
-'      padding-top: 0.3rem;\n' +
-'      padding-bottom: 0.3rem;\n' +
-'      color: var(--text);\n' +
+'      width: 100%;\n' +
+'      box-sizing: border-box;\n' +
+'      border-radius: 0.4rem;\n' +
+'      padding: 0.5rem;\n' +
+'      margin-top: 0.4rem;\n' +
+'      margin-bottom: 0.5rem;\n' +
+'      background-color: var(--bg);\n' +
+'      word-break: normal;\n' +
+'      overflow-wrap: break-word;\n' +
+'    }\n' +
+'    .content-level-1 {\n' +
+'      border: 3px solid var(--color-h2);\n' +
+'    }\n' +
+'    .content-level-2 {\n' +
+'      border: 3px solid var(--color-h3);\n' +
+'    }\n' +
+'    .content-level-3 {\n' +
+'      border: 3px solid var(--color-h4);\n' +
+'    }\n' +
+'    .content-level-4 {\n' +
+'      border: 3px solid var(--color-h5);\n' +
+'    }\n' +
+'    .content-root {\n' +
+'      border: 3px solid var(--border);\n' +
 '    }\n' +
 '    p {\n' +
 '      margin-top: 0;\n' +
 '      margin-bottom: 0.8rem;\n' +
 '      text-align: justify;\n' +
 '      color: var(--text);\n' +
-'      word-break: break-word;\n' +
+'      word-break: normal;\n' +
 '      overflow-wrap: break-word;\n' +
+'    }\n' +
+'    p:last-child {\n' +
+'      margin-bottom: 0;\n' +
 '    }\n' +
 '    ul {\n' +
 '      margin-top: 0;\n' +
 '      margin-bottom: 0.8rem;\n' +
 '      padding-left: 1.2rem;\n' +
 '      color: var(--text);\n' +
+'      word-break: normal;\n' +
+'      overflow-wrap: break-word;\n' +
+'    }\n' +
+'    ul:last-child {\n' +
+'      margin-bottom: 0;\n' +
 '    }\n' +
 '    li {\n' +
 '      margin-bottom: 0.4rem;\n' +
 '      color: var(--text);\n' +
+'      word-break: normal;\n' +
+'      overflow-wrap: break-word;\n' +
 '    }\n' +
 '    a {\n' +
 '      color: var(--text);\n' +
@@ -1516,6 +1579,7 @@
           { label: 'Loại bỏ Header/Footer', passed: true, message: 'Nội dung Header/Footer và số trang độc lập đã bị loại khỏi HTML.' },
           { label: 'Bỏ mục lục Word', passed: true, message: 'Đã loại bỏ hoàn toàn ' + tocRemovedCount + ' phần tử Mục Lục và tiêu đề Mục Lục khỏi file HTML kết quả.' },
           { label: 'Cắt dòng đầu làm H1', passed: true, message: 'Đã đem dòng đầu tiên "' + docTitle + '" lên làm tiêu đề H1 chính và loại bỏ khỏi phần thân.' },
+          { label: 'Màu sắc & Phân cấp Heading', passed: true, message: 'Heading cấp 1-4 mang màu sắc nhận diện đặc trưng (#4A154B, #782813, #9E6510, #365E14) thụt lề theo cấp bậc, tam giác xoay mượt mà, khối nội dung viền 3px đồng màu và trải rộng tối đa cho điện thoại.' },
           { label: 'Heading thu gọn mặc định', passed: true, message: 'Các mục Heading xuất ra dạng <details> mặc định đóng, nhấp vào mới mở ra.' },
           { label: 'Chuẩn hoá bullet Markdown', passed: true, message: 'Đã phân cấp bullet theo khoảng cách thụt lề chuẩn Markdown và làm sạch tiền tố (- , * , + , • ) ở đầu câu khi chuyển thành thẻ <li>.' },
           { label: 'Tác giả chuẩn hoá', passed: true, message: 'Trang HTML đầu ra mang tên tác giả "' + AUTHOR_NAME + '".' },
