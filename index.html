@@ -4,7 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Chuyển Tập Tin "Dưỡng Sinh.DOCX" Thành HTML - Dương Tấn Chánh</title>
-  <script src="js/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script>
+    if (typeof window.JSZip === 'undefined') {
+      document.write('<script src="js/jszip.min.js"><\/script>');
+    }
+  </script>
   <style>
     :root {
       --bg: #ffffff;
@@ -12,6 +17,7 @@
       --border: #000000;
       --primary: #f0f0f0;
       --error: #FF2040;
+      --success: #009911;
       --font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
 
@@ -130,7 +136,7 @@
     .file-drop-area {
       border: 2px dashed var(--border);
       border-radius: 0.5rem;
-      padding: 1.5rem 0.5rem;
+      padding: 1rem 0.5rem;
       text-align: center;
       cursor: pointer;
       background-color: var(--bg);
@@ -139,6 +145,15 @@
 
     .file-drop-area:hover, .file-drop-area.dragover {
       background-color: var(--primary);
+    }
+
+    .upload-icon {
+      margin: 0 auto 0.5rem auto;
+      display: block;
+    }
+
+    .file-area-text {
+      font-weight: bold;
     }
 
     .stats-grid-box {
@@ -179,6 +194,23 @@
       font-size: 0.95rem;
     }
 
+    .val-pass-icon {
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: var(--success);
+    }
+
+    .val-fail-icon {
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: var(--error);
+    }
+
+    .btn-toggle-logs {
+      padding: 0.3rem 0.6rem;
+      font-size: 0.9rem;
+    }
+
     .logs-container {
       border: 2px solid var(--border);
       border-radius: 0.4rem;
@@ -191,6 +223,11 @@
       background-color: var(--bg);
     }
 
+    .log-item {
+      padding: 0.15rem 0;
+      border-bottom: 1px solid var(--primary);
+    }
+
     .preview-frame-box {
       width: 100%;
       height: 550px;
@@ -201,7 +238,7 @@
     }
 
     .hidden {
-      display: none !important;
+      display: none;
     }
 
     .error-msg {
@@ -230,12 +267,12 @@
     <p>Nhấp chọn, kéo thả hoặc dán tập tin Word (.docx) để phân tích cấu trúc và chuyển đổi sang HTML:</p>
 
     <div id="dropArea" class="file-drop-area">
-      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 0.5rem auto; display: block;">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="upload-icon">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
         <polyline points="17 8 12 3 7 8"></polyline>
         <line x1="12" y1="3" x2="12" y2="15"></line>
       </svg>
-      <div id="fileAreaText" style="font-weight: bold;">Nhấp vào đây để chọn tập tin .docx hoặc kéo thả tập tin vào ô này</div>
+      <div id="fileAreaText" class="file-area-text">Nhấp vào đây để chọn tập tin .docx hoặc kéo thả tập tin vào ô này</div>
       <input type="file" id="fileInput" accept=".docx" class="hidden" />
     </div>
 
@@ -282,11 +319,11 @@
       </div>
     </div>
 
-    <h3 style="margin-top: 1rem;">Danh sách kiểm tra tự động (Validation):</h3>
+    <h3>Danh sách kiểm tra tự động (Validation):</h3>
     <div id="validationContainer" class="validation-list"></div>
 
-    <div style="margin-top: 1rem;">
-      <button type="button" id="btnToggleLogs" class="btn-action" style="padding: 0.3rem 0.6rem; font-size: 0.9rem;">
+    <div>
+      <button type="button" id="btnToggleLogs" class="btn-action btn-toggle-logs">
         ▲ Ẩn nhật ký phân tích
       </button>
       <div id="logsContainer" class="logs-container"></div>
@@ -296,7 +333,7 @@
   <!-- Khối 3: Tải về & Xem trước -->
   <div id="previewSection" class="card-box hidden">
     <h2>3. Tải về tập tin HTML chuẩn hoá</h2>
-    <div class="flex-row" style="margin-bottom: 1rem;">
+    <div class="flex-row">
       <button type="button" id="btnDownload" class="btn-action">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -308,7 +345,7 @@
     </div>
 
     <h2>4. Xem trước nội dung (Preview)</h2>
-    <p style="font-size: 0.95rem;">
+    <p>
       Khung dưới đây hiển thị chính xác nội dung HTML đầu ra. Nhấp vào các liên kết tham chiếu sẽ tự mở mục ẩn chứa nó và cuộn mượt đến đúng vị trí:
     </p>
 
@@ -439,13 +476,20 @@
         errorMessage.classList.add('hidden');
       }
 
-      // Chuẩn hoá tiếng Việt quy tắc mới: "hoà" thay vì "hòa", "thuỷ" thay vì "thủy"
+      // Chuẩn hoá tiếng Việt quy tắc mới: "hoà" thay vì "hòa", "thuỷ" thay vì "thủy", "hoè" thay vì "hòe"
       function normalizeVietnameseTypography(str) {
         if (!str) return '';
-        return str
-          .replace(/oà/g, 'oà').replace(/oá/g, 'oá').replace(/oả/g, 'oả').replace(/oã/g, 'oã').replace(/oạ/g, 'oạ')
-          .replace(/oè/g, 'oè').replace(/oé/g, 'oé').replace(/oẻ/g, 'oẻ').replace(/oẽ/g, 'oẽ').replace(/oẹ/g, 'oẹ')
-          .replace(/uỳ/g, 'uỳ').replace(/uý/g, 'uý').replace(/uỷ/g, 'uỷ').replace(/uỹ/g, 'uỹ').replace(/uỵ/g, 'uỵ');
+        var s = str.normalize('NFC');
+        return s
+          .replace(/òa/g, 'oà').replace(/óa/g, 'oá').replace(/ỏa/g, 'oả').replace(/õa/g, 'oã').replace(/ọa/g, 'oạ')
+          .replace(/Òa/g, 'Oà').replace(/Óa/g, 'Oá').replace(/Ỏa/g, 'Oả').replace(/Õa/g, 'Oã').replace(/Ọa/g, 'Oạ')
+          .replace(/ÒA/g, 'OÀ').replace(/ÓA/g, 'OÁ').replace(/ỎA/g, 'OẢ').replace(/ÕA/g, 'OÃ').replace(/ỌA/g, 'OẠ')
+          .replace(/òe/g, 'oè').replace(/óe/g, 'oé').replace(/ỏe/g, 'oẻ').replace(/õe/g, 'oẽ').replace(/ọe/g, 'oẹ')
+          .replace(/Òe/g, 'Oè').replace(/Óe/g, 'Oé').replace(/Ỏe/g, 'Oẻ').replace(/Õe/g, 'Oẽ').replace(/Ọe/g, 'Oẹ')
+          .replace(/ÒE/g, 'OÈ').replace(/ÓE/g, 'OÉ').replace(/ỎE/g, 'OẺ').replace(/ÕE/g, 'OẼ').replace(/ỌE/g, 'OẸ')
+          .replace(/ùy/g, 'uỳ').replace(/úy/g, 'uý').replace(/ủy/g, 'uỷ').replace(/ũy/g, 'uỹ').replace(/ụy/g, 'uỵ')
+          .replace(/Ùy/g, 'Uỳ').replace(/Úy/g, 'Uý').replace(/Ủy/g, 'Uỷ').replace(/Ũy/g, 'Uỹ').replace(/Ụy/g, 'Uỵ')
+          .replace(/ÙY/g, 'UỲ').replace(/ÚY/g, 'UÝ').replace(/ỦY/g, 'UỶ').replace(/ŨY/g, 'UỸ').replace(/ỤY/g, 'UỴ');
       }
 
       function slugify(text) {
@@ -497,7 +541,7 @@
           renderValidations(result.validations);
 
           logsContainer.innerHTML = result.logs.map(function (log) {
-            return '<div style="padding: 0.15rem 0; border-bottom: 1px solid #eeeeee;">' + escapeHtml(log) + '</div>';
+            return '<div class="log-item">' + escapeHtml(log) + '</div>';
           }).join('');
 
           resultSection.classList.remove('hidden');
@@ -523,9 +567,9 @@
       function renderValidations(validations) {
         validationContainer.innerHTML = validations.map(function (v) {
           const icon = v.passed ? '✓' : '⚠';
-          const color = v.passed ? '#008000' : '#cc0000';
+          const iconClass = v.passed ? 'val-pass-icon' : 'val-fail-icon';
           return '<div class="validation-item">' +
-            '<span style="font-weight: bold; font-size: 1.1rem; color: ' + color + ';">' + icon + '</span>' +
+            '<span class="' + iconClass + '">' + icon + '</span>' +
             '<div><strong>' + escapeHtml(v.label) + '</strong>: ' + escapeHtml(v.message) + '</div>' +
           '</div>';
         }).join('');
@@ -1301,21 +1345,21 @@
 '      --body-font-style: normal;\n' +
 '      --body-color: var(--text);\n' +
 '      \n' +
+'      /* BẢNG MÀU HEADING VÀ TIÊU ĐỀ */\n' +
+'      --color-h2: #4A154B; /* Heading 1 & Heading 2 (Cấp 1) - Tím mận sẫm */\n' +
+'      --color-h3: #782813; /* Heading 3 (Cấp 2) - Nâu đỏ sẫm */\n' +
+'      --color-h4: #9E6510; /* Heading 4 (Cấp 3) - Nâu vàng hổ phách */\n' +
+'      --color-h5: #365E14; /* Heading 5 (Cấp 4) - Xanh lục rêu sẫm */\n' +
+'      \n' +
 '      --h1-font-size: 1.6rem;\n' +
 '      --h1-font-weight: bold;\n' +
 '      --h1-font-style: normal;\n' +
-'      --h1-color: #000000;\n' +
+'      --h1-color: var(--color-h2);\n' +
 '      \n' +
 '      --author-font-size: 1.2rem;\n' +
 '      --author-font-weight: normal;\n' +
 '      --author-font-style: normal;\n' +
 '      --author-color: var(--text);\n' +
-'      \n' +
-'      /* BẢNG MÀU HEADING 1-4 THEO ĐÚNG ẢNH MẪU */\n' +
-'      --color-h2: #4A154B; /* Cấp 1 (H2) - Tím mận sẫm */\n' +
-'      --color-h3: #782813; /* Cấp 2 (H3) - Nâu đỏ sẫm */\n' +
-'      --color-h4: #9E6510; /* Cấp 3 (H4) - Nâu vàng hổ phách */\n' +
-'      --color-h5: #365E14; /* Cấp 4 (H5) - Xanh lục rêu sẫm */\n' +
 '      \n' +
 '      --h2-font-size: 1.4rem;\n' +
 '      --h2-font-weight: bold;\n' +
@@ -1375,27 +1419,26 @@
 '    .controls-bar {\n' +
 '      display: flex;\n' +
 '      flex-wrap: wrap;\n' +
+'      justify-content: center;\n' +
 '      gap: 0.5rem;\n' +
 '      margin-top: 1rem;\n' +
 '      margin-bottom: 1rem;\n' +
 '      width: 100%;\n' +
 '    }\n' +
 '    .btn-toggle {\n' +
-'      background-color: var(--bg);\n' +
-'      color: var(--text);\n' +
-'      border: 2px solid var(--border);\n' +
+'      background-color: #808080;\n' +
+'      color: #ffffff;\n' +
+'      border: none;\n' +
 '      border-radius: 0.4rem;\n' +
 '      padding: 0.5rem 1rem;\n' +
 '      font-size: var(--body-font-size);\n' +
 '      font-weight: bold;\n' +
 '      cursor: pointer;\n' +
 '      font-family: inherit;\n' +
-'      margin-right: 0.5rem;\n' +
-'      margin-bottom: 0.5rem;\n' +
 '      box-sizing: border-box;\n' +
 '    }\n' +
 '    .btn-toggle:hover {\n' +
-'      background-color: var(--primary);\n' +
+'      background-color: #666666;\n' +
 '    }\n' +
 '    details {\n' +
 '      margin-top: 0.5rem;\n' +
@@ -1435,18 +1478,27 @@
 '    .summary-level-1 {\n' +
 '      background-color: var(--color-h2);\n' +
 '      margin-left: 0;\n' +
+'      max-width: 100%;\n' +
 '    }\n' +
 '    .summary-level-2 {\n' +
 '      background-color: var(--color-h3);\n' +
 '      margin-left: 0.8rem;\n' +
+'      max-width: calc(100% - 0.8rem);\n' +
 '    }\n' +
 '    .summary-level-3 {\n' +
 '      background-color: var(--color-h4);\n' +
 '      margin-left: 1.6rem;\n' +
+'      max-width: calc(100% - 1.6rem);\n' +
 '    }\n' +
 '    .summary-level-4 {\n' +
 '      background-color: var(--color-h5);\n' +
 '      margin-left: 2.4rem;\n' +
+'      max-width: calc(100% - 2.4rem);\n' +
+'    }\n' +
+'    .summary-level-5 {\n' +
+'      background-color: var(--color-h5);\n' +
+'      margin-left: 3.2rem;\n' +
+'      max-width: calc(100% - 3.2rem);\n' +
 '    }\n' +
 '    .heading-title {\n' +
 '      margin: 0;\n' +
@@ -1494,8 +1546,11 @@
 '    .content-level-4 {\n' +
 '      border: 3px solid var(--color-h5);\n' +
 '    }\n' +
+'    .content-level-5 {\n' +
+'      border: 3px solid var(--color-h5);\n' +
+'    }\n' +
 '    .content-root {\n' +
-'      border: 3px solid var(--border);\n' +
+'      border: 3px solid var(--h1-color);\n' +
 '    }\n' +
 '    p {\n' +
 '      margin-top: 0;\n' +
@@ -1538,26 +1593,46 @@
 '      });\n' +
 '    }\n' +
 '\n' +
-'    document.addEventListener("DOMContentLoaded", function() {\n' +
-'      document.querySelectorAll(\'a[href^="#"]\').forEach(function(anchor) {\n' +
-'        anchor.addEventListener("click", function(e) {\n' +
-'          e.preventDefault();\n' +
-'          var targetId = this.getAttribute("href").substring(1);\n' +
-'          if (!targetId) return;\n' +
-'          var targetEl = document.getElementById(targetId);\n' +
-'          if (targetEl) {\n' +
-'            var parent = targetEl.closest("details");\n' +
-'            while (parent) {\n' +
-'              parent.open = true;\n' +
-'              parent = parent.parentElement ? parent.parentElement.closest("details") : null;\n' +
-'            }\n' +
-'            setTimeout(function() {\n' +
-'              targetEl.scrollIntoView({ behavior: "smooth", block: "start" });\n' +
-'            }, 50);\n' +
+'    function handleAnchorClick(e) {\n' +
+'      var href = this.getAttribute("href");\n' +
+'      if (!href || href.indexOf("#") !== 0) return;\n' +
+'      var targetId = href.substring(1);\n' +
+'      if (!targetId) return;\n' +
+'      var targetEl = document.getElementById(targetId);\n' +
+'      if (targetEl) {\n' +
+'        e.preventDefault();\n' +
+'        var el = targetEl;\n' +
+'        while (el) {\n' +
+'          if (el.tagName && el.tagName.toLowerCase() === "details") {\n' +
+'            el.open = true;\n' +
 '          }\n' +
-'        });\n' +
+'          el = el.parentElement;\n' +
+'        }\n' +
+'        setTimeout(function() {\n' +
+'          targetEl.scrollIntoView({ behavior: "smooth", block: "start" });\n' +
+'        }, 60);\n' +
+'      }\n' +
+'    }\n' +
+'\n' +
+'    function initPageEvents() {\n' +
+'      var btnOpen = document.getElementById("btnOpenAll");\n' +
+'      var btnClose = document.getElementById("btnCloseAll");\n' +
+'      if (btnOpen) {\n' +
+'        btnOpen.addEventListener("click", function() { toggleAllDetails(true); });\n' +
+'      }\n' +
+'      if (btnClose) {\n' +
+'        btnClose.addEventListener("click", function() { toggleAllDetails(false); });\n' +
+'      }\n' +
+'      document.querySelectorAll(\'a[href^="#"]\').forEach(function(anchor) {\n' +
+'        anchor.addEventListener("click", handleAnchorClick);\n' +
 '      });\n' +
-'    });\n' +
+'    }\n' +
+'\n' +
+'    if (document.readyState === "loading") {\n' +
+'      document.addEventListener("DOMContentLoaded", initPageEvents);\n' +
+'    } else {\n' +
+'      initPageEvents();\n' +
+'    }\n' +
 '  <\/script>\n' +
 '</head>\n' +
 '<body>\n' +
@@ -1565,8 +1640,8 @@
 '  <div class="author-byline">' + escapeHtml(AUTHOR_NAME) + '</div>\n' +
 '\n' +
 '  <div class="controls-bar">\n' +
-'    <button type="button" class="btn-toggle" onclick="toggleAllDetails(true)">Mở tất cả</button>\n' +
-'    <button type="button" class="btn-toggle" onclick="toggleAllDetails(false)">Thu gọn tất cả</button>\n' +
+'    <button type="button" id="btnOpenAll" class="btn-toggle">Mở tất cả</button>\n' +
+'    <button type="button" id="btnCloseAll" class="btn-toggle">Thu gọn tất cả</button>\n' +
 '  </div>\n' +
 '\n' +
 '  ' + bodyContentHtml + '\n' +
@@ -1579,7 +1654,7 @@
           { label: 'Loại bỏ Header/Footer', passed: true, message: 'Nội dung Header/Footer và số trang độc lập đã bị loại khỏi HTML.' },
           { label: 'Bỏ mục lục Word', passed: true, message: 'Đã loại bỏ hoàn toàn ' + tocRemovedCount + ' phần tử Mục Lục và tiêu đề Mục Lục khỏi file HTML kết quả.' },
           { label: 'Cắt dòng đầu làm H1', passed: true, message: 'Đã đem dòng đầu tiên "' + docTitle + '" lên làm tiêu đề H1 chính và loại bỏ khỏi phần thân.' },
-          { label: 'Màu sắc & Phân cấp Heading', passed: true, message: 'Heading cấp 1-4 mang màu sắc nhận diện đặc trưng (#4A154B, #782813, #9E6510, #365E14) thụt lề theo cấp bậc, tam giác xoay mượt mà, khối nội dung viền 3px đồng màu và trải rộng tối đa cho điện thoại.' },
+          { label: 'Màu sắc & Phân cấp Heading', passed: true, message: 'Heading 1 và Heading 2 (Cấp 1) mang màu tím mận sẫm (#4A154B), Heading 3-5 mang màu nhận diện đặc trưng (#782813, #9E6510, #365E14) thụt lề theo cấp bậc, tam giác xoay mượt mà, khối nội dung viền 3px đồng màu và trải rộng tối đa cho điện thoại.' },
           { label: 'Heading thu gọn mặc định', passed: true, message: 'Các mục Heading xuất ra dạng <details> mặc định đóng, nhấp vào mới mở ra.' },
           { label: 'Chuẩn hoá bullet Markdown', passed: true, message: 'Đã phân cấp bullet theo khoảng cách thụt lề chuẩn Markdown và làm sạch tiền tố (- , * , + , • ) ở đầu câu khi chuyển thành thẻ <li>.' },
           { label: 'Tác giả chuẩn hoá', passed: true, message: 'Trang HTML đầu ra mang tên tác giả "' + AUTHOR_NAME + '".' },
