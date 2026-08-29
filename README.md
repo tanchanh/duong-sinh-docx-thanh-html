@@ -22,7 +22,8 @@
   - Tự động lấy dòng đầu tiên của tài liệu làm tiêu đề chính `<h1>`.
   - Tự động phát hiện và loại bỏ các khối Mục Lục Word (Table of Contents) dư thừa.
 - 🎨 **Màu Sắc & Phân Cấp Heading (H1-H5)**:
-  - **Tiêu Đề Chính (H1)**: Tím mận sẫm (`#4A154B`), đồng màu với Heading 2.
+  - **Tiêu Đề Chính (H1)**: Nền xanh lá (`#009911`), chữ trắng (`#FFFFFF`), căn giữa trang nổi bật.
+  - **Tác Giả ("Dương Tấn Chánh")**: Nằm ngay dưới H1, căn giữa trang.
   - **Heading Cấp 1 (H2)**: Tím mận sẫm (`#4A154B`), căn lề chuẩn (`margin-left: 0`).
   - **Heading Cấp 2 (H3)**: Nâu đỏ sẫm (`#782813`), thụt lề cấp 2 (`margin-left: 0.8rem`).
   - **Heading Cấp 3 (H4)**: Nâu vàng hổ phách (`#9E6510`), thụt lề cấp 3 (`margin-left: 1.6rem`).
@@ -30,10 +31,14 @@
   - Mỗi mục Heading có biểu tượng tam giác `▶` xoay chuyển mượt mà 90 độ xuống dưới khi mở rộng nội dung.
 - 📱 **Khung Viền 3px Đồng Màu & Trải Rộng Tối Đa Cho Điện Thoại**:
   - Toàn bộ khối văn bản và danh sách con (kể cả khối nội dung trực tiếp dưới Heading 1) được mở rộng bề rộng tối đa theo chiều ngang (`width: 100%`, không thụt lề thân bài) giúp trải nghiệm đọc trên điện thoại luôn thoáng đãng.
-  - Bao viền dày 3px rõ nét tương ứng với mã màu của từng cấp Heading cha (Nội dung dưới H1 & H2 mang viền tím mận sẫm `#4A154B`, H3 mang viền nâu đỏ sẫm `#782813`, H4 mang viền nâu vàng hổ phách `#9E6510`, H5 mang viền xanh lục rêu sẫm `#365E14`).
+  - Bao viền dày 3px rõ nét tương ứng với mã màu của từng cấp Heading cha (Nội dung dưới H1 mang viền xanh lá `#009911`, H2 mang viền tím mận sẫm `#4A154B`, H3 mang viền nâu đỏ sẫm `#782813`, H4 mang viền nâu vàng hổ phách `#9E6510`, H5 mang viền xanh lục rêu sẫm `#365E14`).
 - 📂 **Cấu Trúc Cây Phân Cấp `<details>`**:
   - Các mục Heading tự động bao bọc trong thẻ `<details>` mặc định thu gọn, nhấp để mở rộng.
   - Cung cấp nút điều khiển "Mở tất cả" / "Thu gọn tất cả" canh giữa trang, nền xám `#808080`, chữ trắng `#FFFFFF`, không viền trang nhã.
+- ⬆️ **Nút Cuộn Đầu Trang (Scroll to Top)**:
+  - Nút hình vuông cố định ở góc dưới bên phải màn hình khi cuộn trang.
+  - Sử dụng biểu tượng mũi tên hướng lên vẽ bằng SVG trực tiếp, đồng bộ phong cách với nút "Mở tất cả" (nền xám `#808080`, chữ/icon trắng `#FFFFFF`, không viền).
+  - Nhấp chuột để cuộn mượt (`smooth scroll`) về đầu trang nhanh chóng.
 - 📌 **Chuẩn Hoá Bullet Theo Quy Ước Markdown**:
   - Tự động nhận diện bullet chuẩn Markdown (`- `, `* `, `+ `, `• `) hoặc danh sách từ Word XML.
   - Phân cấp mức độ theo cơ chế thụt lề tương đối chuẩn Markdown (mỗi cấp con thụt lề thêm từ 2 đến 5 khoảng trắng so với mốc của cấp cha liền trước, tự động lùi cấp khi giảm thụt lề).

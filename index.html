@@ -1346,7 +1346,8 @@
 '      --body-color: var(--text);\n' +
 '      \n' +
 '      /* BẢNG MÀU HEADING VÀ TIÊU ĐỀ */\n' +
-'      --color-h2: #4A154B; /* Heading 1 & Heading 2 (Cấp 1) - Tím mận sẫm */\n' +
+'      --color-h1: #009911; /* Heading 1 - Xanh lá */\n' +
+'      --color-h2: #4A154B; /* Heading 2 (Cấp 1) - Tím mận sẫm */\n' +
 '      --color-h3: #782813; /* Heading 3 (Cấp 2) - Nâu đỏ sẫm */\n' +
 '      --color-h4: #9E6510; /* Heading 4 (Cấp 3) - Nâu vàng hổ phách */\n' +
 '      --color-h5: #365E14; /* Heading 5 (Cấp 4) - Xanh lục rêu sẫm */\n' +
@@ -1354,7 +1355,8 @@
 '      --h1-font-size: 1.6rem;\n' +
 '      --h1-font-weight: bold;\n' +
 '      --h1-font-style: normal;\n' +
-'      --h1-color: var(--color-h2);\n' +
+'      --h1-color: #ffffff;\n' +
+'      --h1-bg: #009911;\n' +
 '      \n' +
 '      --author-font-size: 1.2rem;\n' +
 '      --author-font-weight: normal;\n' +
@@ -1402,9 +1404,12 @@
 '      font-weight: var(--h1-font-weight);\n' +
 '      font-style: var(--h1-font-style);\n' +
 '      color: var(--h1-color);\n' +
+'      background-color: var(--h1-bg);\n' +
 '      text-align: center;\n' +
+'      padding: 0.5rem 1rem;\n' +
+'      border-radius: 0.4rem;\n' +
 '      margin-top: 1rem;\n' +
-'      margin-bottom: 0.2rem;\n' +
+'      margin-bottom: 0.4rem;\n' +
 '      word-break: normal;\n' +
 '      overflow-wrap: break-word;\n' +
 '    }\n' +
@@ -1413,7 +1418,7 @@
 '      font-weight: var(--author-font-weight);\n' +
 '      font-style: var(--author-font-style);\n' +
 '      color: var(--author-color);\n' +
-'      text-align: right;\n' +
+'      text-align: center;\n' +
 '      margin-bottom: 1rem;\n' +
 '    }\n' +
 '    .controls-bar {\n' +
@@ -1571,7 +1576,7 @@
 '      border: 3px solid var(--color-h5);\n' +
 '    }\n' +
 '    .content-root {\n' +
-'      border: 3px solid var(--h1-color);\n' +
+'      border: 3px solid var(--color-h1);\n' +
 '    }\n' +
 '    p {\n' +
 '      margin-top: 0;\n' +
@@ -1688,7 +1693,7 @@
           { label: 'Loại bỏ Header/Footer', passed: true, message: 'Nội dung Header/Footer và số trang độc lập đã bị loại khỏi HTML.' },
           { label: 'Bỏ mục lục Word', passed: true, message: 'Đã loại bỏ hoàn toàn ' + tocRemovedCount + ' phần tử Mục Lục và tiêu đề Mục Lục khỏi file HTML kết quả.' },
           { label: 'Cắt dòng đầu làm H1', passed: true, message: 'Đã đem dòng đầu tiên "' + docTitle + '" lên làm tiêu đề H1 chính và loại bỏ khỏi phần thân.' },
-          { label: 'Màu sắc & Phân cấp Heading', passed: true, message: 'Heading 1 và Heading 2 (Cấp 1) mang màu tím mận sẫm (#4A154B), Heading 3-5 mang màu nhận diện đặc trưng (#782813, #9E6510, #365E14) thụt lề theo cấp bậc, tam giác xoay mượt mà, khối nội dung viền 3px đồng màu và trải rộng tối đa cho điện thoại.' },
+          { label: 'Màu sắc & Phân cấp Heading', passed: true, message: 'Heading 1 mang màu nền xanh lá (#009911) chữ trắng canh giữa, Heading 2 mang màu tím mận (#4A154B), Heading 3-5 mang màu đặc trưng (#782813, #9E6510, #365E14), khối nội dung viền 3px đồng màu và trải rộng tối đa cho điện thoại.' },
           { label: 'Heading thu gọn mặc định', passed: true, message: 'Các mục Heading xuất ra dạng <details> mặc định đóng, nhấp vào mới mở ra.' },
           { label: 'Nút cuộn đầu trang', passed: true, message: 'Nút vuông cố định ở góc dưới bên phải với biểu tượng mũi tên SVG giúp cuộn mượt về đầu trang.' },
           { label: 'Chuẩn hoá bullet Markdown', passed: true, message: 'Đã phân cấp bullet theo khoảng cách thụt lề chuẩn Markdown và làm sạch tiền tố (- , * , + , • ) ở đầu câu khi chuyển thành thẻ <li>.' },
